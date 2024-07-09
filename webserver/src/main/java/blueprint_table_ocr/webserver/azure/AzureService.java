@@ -46,11 +46,12 @@ public class AzureService {
         this.layoutDocumentData = layoutDocumentData;
     }
     
-    public void analyzeTable(MultipartFile file) throws IOException { // 파일을 받아서 OCR 수행하는 메인 메소드
+    public List<DocumentTable> analyzeTable(MultipartFile file) throws IOException { // 파일을 받아서 OCR 수행하는 메인 메소드
         setLayoutDocumentData(FileToBinaryData(file));
         syncPoller = documentAnalysisClient.beginAnalyzeDocument("prebuilt-layout", layoutDocumentData);
         AnalyzeResult analyzeLayoutResult = syncPoller.getFinalResult();
         TableToCSV(analyzeLayoutResult.getTables());
+        return analyzeLayoutResult.getTables();
     }
     
     public BinaryData FileToBinaryData(MultipartFile file) throws IOException { // pdf 파일을 OCR을 위해 BinaryData 형태로 바꿔주는 메소드
@@ -72,6 +73,10 @@ public class AzureService {
         }
     }
     
+    // 원래 있던 기능이었는데 삭제한 것 
+    // 0,0을 자동으로 제목으로 인식하는 기능
+    // 1열~2열을 자동으로 행 데이터로 인식하여 병합 (-> 3열짜리 행 데이터가 있는 테이블이 있어서 잠시 제거함, 사용자 검수 기능으로 바꿀 예정)
+    // 빗금 그어진 열 결측치 퍼센트 기준으로 자동 삭제 기능 -> 사용자 검수 기능으로 통합 예정 (열 자동 병합을 삭제하면서 이것도 잠시 삭제)
     private static void processTable(DocumentTable table, CSVPrinter csvPrinter) throws IOException { // DocumentTable 클래스 내부 데이터를 CSV 파일로 전환
         List<List<String>> tableData = new ArrayList<>();
 
@@ -86,6 +91,27 @@ public class AzureService {
             }
             tableData.get(rowIndex).set(colIndex, content);
         });
+        
+        List<Integer> removeIndex = new ArrayList<>();
+        for (int i = 1; i < tableData.size(); i++) {
+            List<String> rowData = tableData.get(i);
+            int cnt = 0;
+            int cnt_col = 0;
+            for (int j = 0; j < rowData.size(); j++) {
+                if (!rowData.get(j).isEmpty()) { // 비어 있지 않은지 확인할 때는 isEmpty() 메서드를 사용하는 것이 좋습니다.
+                    cnt++;
+                    cnt_col = j;
+                }
+            }
+            if (cnt == 1) { // 1개 제외 모든 값이 "" 이면 위 열과 자동 병합
+                tableData.get(i - 1).set(cnt_col, tableData.get(i - 1).get(cnt_col) + rowData.get(cnt_col));
+                removeIndex.add(i);
+            }
+        }
+        Collections.sort(removeIndex, Collections.reverseOrder());
+        for (int index : removeIndex) {
+            tableData.remove(index);
+        }
         
         for (List<String> rowData : tableData) {
             csvPrinter.printRecord(rowData);
