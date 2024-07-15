@@ -1,16 +1,19 @@
 package blueprint_table_ocr.webserver.azure;
 
-import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +21,7 @@ import com.azure.ai.formrecognizer.documentanalysis.DocumentAnalysisClient;
 import com.azure.ai.formrecognizer.documentanalysis.DocumentAnalysisClientBuilder;
 import com.azure.ai.formrecognizer.documentanalysis.models.AnalyzeResult;
 import com.azure.ai.formrecognizer.documentanalysis.models.DocumentTable;
+import com.azure.ai.formrecognizer.documentanalysis.models.DocumentTableCell;
 import com.azure.ai.formrecognizer.documentanalysis.models.OperationResult;
 import com.azure.core.credential.AzureKeyCredential;
 import com.azure.core.util.BinaryData;
@@ -46,12 +50,13 @@ public class AzureService {
         this.layoutDocumentData = layoutDocumentData;
     }
     
-    public List<DocumentTable> analyzeTable(MultipartFile file) throws IOException { // 파일을 받아서 OCR 수행하는 메인 메소드
+    public XSSFWorkbook analyzeTable(MultipartFile file) throws IOException { // 파일을 받아서 OCR 수행하는 메인 메소드
         setLayoutDocumentData(FileToBinaryData(file));
         syncPoller = documentAnalysisClient.beginAnalyzeDocument("prebuilt-layout", layoutDocumentData);
         AnalyzeResult analyzeLayoutResult = syncPoller.getFinalResult();
-        TableToCSV(analyzeLayoutResult.getTables());
-        return analyzeLayoutResult.getTables();
+        List<DocumentTable> documentTables = analyzeLayoutResult.getTables();
+        XSSFWorkbook workbook = TableToXLSX(documentTables);
+        return workbook;
     }
     
     public BinaryData FileToBinaryData(MultipartFile file) throws IOException { // pdf 파일을 OCR을 위해 BinaryData 형태로 바꿔주는 메소드
@@ -59,63 +64,130 @@ public class AzureService {
         return BinaryData.fromBytes(fileBytes);
     }
     
-    public void TableToCSV(List<DocumentTable> documentTables) throws IOException { // SyncPoller가 인식한 여러가지 데이터 중 table 형태를 CSV 파일로 전환
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("C:/Users/임형준/Desktop/산학/test.csv")
-        		,StandardCharsets.UTF_8));
-             CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.DEFAULT)) {
-
-            for (DocumentTable table : documentTables) {
-                processTable(table, csvPrinter);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+    public XSSFWorkbook TableToXLSX(List<DocumentTable> documentTables) throws IOException { // SyncPoller가 인식한 여러가지 데이터 중 table 형태를 XLSX 파일로 전환
+    	
+    	XSSFWorkbook workbook = new XSSFWorkbook();
+    	for(int i = 0; i < documentTables.size(); i++) {
+    		
+    		DocumentTable table = documentTables.get(i);
+    		XSSFSheet sheet = workbook.createSheet("Table_" + i); // 테이블마다 신규 시트로 분리
+    		
+    		for(int j = 0; j < table.getRowCount(); j++) { // 열 개수를 받아 열 추가
+    			Row row = sheet.createRow(j);
+    			for(int k = 0; k < table.getColumnCount(); k++) { 
+    				row.createCell(k);
+    			}
+    		}
+    		
+    		List<DocumentTableCell> cells = table.getCells(); // 셀 리스트 
+    		for(DocumentTableCell cell : cells) {
+    			int row = cell.getRowIndex();
+    			int col = cell.getColumnIndex();
+    			String data = cell.getContent();
+    			data = data.replace(":selected:", "").replace(":unselected:", "").replace("\n", " ").replace("  ", " "); // 필요없는 문자 제거
+    			// 필요한 셀 정보 리턴
+    			Cell xlsxCell = sheet.getRow(row).createCell(col); // 셀 생성
+    			xlsxCell.setCellValue(data);
+    		}
+    		sheet = processSheet(sheet);
+    	}
+    	 try (FileOutputStream fileOut = new FileOutputStream("documentTables_compress.xlsx")) { // 처리한 데이터 로컬로 write 하는 코드 (확인용)
+             workbook.write(fileOut);
+         }
+         
+         return workbook;
+    	
     }
     
-    // 원래 있던 기능이었는데 삭제한 것 
-    // 0,0을 자동으로 제목으로 인식하는 기능
-    // 1열~2열을 자동으로 행 데이터로 인식하여 병합 (-> 3열짜리 행 데이터가 있는 테이블이 있어서 잠시 제거함, 사용자 검수 기능으로 바꿀 예정)
-    // 빗금 그어진 열 결측치 퍼센트 기준으로 자동 삭제 기능 -> 사용자 검수 기능으로 통합 예정 (열 자동 병합을 삭제하면서 이것도 잠시 삭제)
-    private static void processTable(DocumentTable table, CSVPrinter csvPrinter) throws IOException { // DocumentTable 클래스 내부 데이터를 CSV 파일로 전환
-        List<List<String>> tableData = new ArrayList<>();
+    public XSSFSheet processSheet(XSSFSheet sheet) throws IOException {
+    	// 기호 부분 인식을 잘못해서 셀이 2개로 나뉘는 경우를 막기 위한 간단한 후처리
+        int rowCnt = sheet.getPhysicalNumberOfRows();
+        List<Integer> emptyRow = new ArrayList<>();
 
-        table.getCells().forEach(cell -> {
-            int rowIndex = cell.getRowIndex();
-            int colIndex = cell.getColumnIndex();
-            String content = cell.getContent().replace(":selected:", "").replace(":unselected:", "").replace("\n", " "); // 필요없는 문자 제거
+        for (int i = 1; i < rowCnt; i++) { // 제목 행은 항상 셀이 하나이므로 오류 방지를 위해 연산 X
+            Row xlsxRow = sheet.getRow(i);
+            if (xlsxRow == null) continue; // Row가 null일 경우 건너뛰기
 
-            while (tableData.size() <= rowIndex) {
-                List<String> newRow = new ArrayList<>(Collections.nCopies(table.getColumnCount(), "")); // 빈 칸은 ""로 채움
-                tableData.add(newRow);
-            }
-            tableData.get(rowIndex).set(colIndex, content);
-        });
-        
-        List<Integer> removeIndex = new ArrayList<>();
-        for (int i = 1; i < tableData.size(); i++) {
-            List<String> rowData = tableData.get(i);
-            int cnt = 0;
-            int cnt_col = 0;
-            for (int j = 0; j < rowData.size(); j++) {
-                if (!rowData.get(j).isEmpty()) { // 비어 있지 않은지 확인할 때는 isEmpty() 메서드를 사용하는 것이 좋습니다.
-                    cnt++;
-                    cnt_col = j;
+            int notNaCnt = 0; // 비지 않은 셀 카운트
+            int cellIdx = -1;
+
+            for (int j = 0; j < xlsxRow.getPhysicalNumberOfCells(); j++) {
+                Cell cell = xlsxRow.getCell(j);
+                if (cell != null && cell.getCellType() != CellType.BLANK && !cell.getStringCellValue().isEmpty()) {
+                    notNaCnt++;
+                    cellIdx = j;
                 }
             }
-            if (cnt == 1) { // 1개 제외 모든 값이 "" 이면 위 열과 자동 병합
-                tableData.get(i - 1).set(cnt_col, tableData.get(i - 1).get(cnt_col) + rowData.get(cnt_col));
-                removeIndex.add(i);
+
+            if (notNaCnt == 1 && cellIdx >= 0) { // 한 셀만 데이터가 있다면 해당 셀 위 행의 셀과 합치고 해당 행 삭제
+                Row previousRow = sheet.getRow(i - 1);
+                if (previousRow == null) continue; // 이전 행이 null일 경우 건너뛰기
+
+                Cell targetCell = previousRow.getCell(cellIdx); // 위 행의 해당 열의 셀
+                if (targetCell == null) {
+                    targetCell = previousRow.createCell(cellIdx);
+                }
+
+                Cell currentCell = xlsxRow.getCell(cellIdx); // 현재 셀
+                if (currentCell != null) {
+                    targetCell.setCellValue((targetCell.getStringCellValue() + ' ' + currentCell.getStringCellValue().replace("  "," "))); // 셀 합칠 때 빈칸을 두고 합치되 빈칸이 2칸이 되면 한칸으로 수정
+                }
+
+                emptyRow.add(i);
             }
         }
-        Collections.sort(removeIndex, Collections.reverseOrder());
-        for (int index : removeIndex) {
-            tableData.remove(index);
+
+        for (int i = emptyRow.size() - 1; i >= 0; i--) { // 뒤에서부터 삭제
+            int rowIndex = emptyRow.get(i);
+            sheet.removeRow(sheet.getRow(rowIndex));
+            if (rowIndex < rowCnt - 1) {
+                sheet.shiftRows(rowIndex + 1, rowCnt, -1);
+            }
         }
-        
-        for (List<String> rowData : tableData) {
-            csvPrinter.printRecord(rowData);
-        }
-        csvPrinter.println();  // 테이블 사이에 공백 행 추가
+        return sheet;
     }
+    
+    public boolean uploadToDB(MultipartFile file, String ColumnRanges) {
+    	// 파일 받아서 행 압축한 뒤 DB에 저장
+    	
+    	// 파일을 DB에 저장하기 쉬운 형태로 변환
+    	
+    	// 파일 행 압축
+    	
+    	// DB로 업로드
+    	
+    	
+    	// 파일 저장 경로 설정
+        String uploadDir = "C:/Users/임형준/Desktop/산학/webserver/webserver";
+        Path uploadPath = Paths.get(uploadDir);
+
+        // 디렉토리가 존재하지 않으면 생성
+        if (!Files.exists(uploadPath)) {
+            try {
+                Files.createDirectories(uploadPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        // 파일 경로 설정
+        Path filePath = uploadPath.resolve(file.getOriginalFilename());
+
+        try {
+            // 파일을 로컬에 저장 (기존 파일이 있을 경우 덮어쓰기)
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        // 파일을 저장하는 이유는 결과를 확인하기 위해서 
+    }
+    
+    public XSSFSheet compressColumn(XSSFSheet sheet, int column_Length) // DB에 넣기 전 행을 압축시켜 표현할 함수
+	{
+    	
+	}
 }
+
