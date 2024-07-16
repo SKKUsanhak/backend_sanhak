@@ -91,12 +91,7 @@ public class AzureService {
     		}
     		sheet = processSheet(sheet);
     	}
-    	 try (FileOutputStream fileOut = new FileOutputStream("documentTables_compress.xlsx")) { // 처리한 데이터 로컬로 write 하는 코드 (확인용)
-             workbook.write(fileOut);
-         }
-         
          return workbook;
-    	
     }
     
     public XSSFSheet processSheet(XSSFSheet sheet) throws IOException {
@@ -120,6 +115,7 @@ public class AzureService {
             }
 
             if (notNaCnt == 1 && cellIdx >= 0) { // 한 셀만 데이터가 있다면 해당 셀 위 행의 셀과 합치고 해당 행 삭제
+            	// 잘린 셀이 숫자일때만 작동하도록 변경
                 Row previousRow = sheet.getRow(i - 1);
                 if (previousRow == null) continue; // 이전 행이 null일 경우 건너뛰기
 
@@ -127,13 +123,12 @@ public class AzureService {
                 if (targetCell == null) {
                     targetCell = previousRow.createCell(cellIdx);
                 }
-
+                
                 Cell currentCell = xlsxRow.getCell(cellIdx); // 현재 셀
-                if (currentCell != null) {
-                    targetCell.setCellValue((targetCell.getStringCellValue() + ' ' + currentCell.getStringCellValue().replace("  "," "))); // 셀 합칠 때 빈칸을 두고 합치되 빈칸이 2칸이 되면 한칸으로 수정
+                if (currentCell != null && currentCell.getStringCellValue().charAt(0) >= '0' && currentCell.getStringCellValue().charAt(0) <= '9') {
+                    targetCell.setCellValue((targetCell.getStringCellValue() + ' ' + currentCell.getStringCellValue()).replace("  ", " ")); // 셀 합칠 때 빈칸을 두고 합치되 빈칸이 2칸이 되면 한칸으로 수정
+                    emptyRow.add(i);
                 }
-
-                emptyRow.add(i);
             }
         }
 
@@ -148,15 +143,6 @@ public class AzureService {
     }
     
     public boolean uploadToDB(MultipartFile file, String ColumnRanges) {
-    	// 파일 받아서 행 압축한 뒤 DB에 저장
-    	
-    	// 파일을 DB에 저장하기 쉬운 형태로 변환
-    	
-    	// 파일 행 압축
-    	
-    	// DB로 업로드
-    	
-    	
     	// 파일 저장 경로 설정
         String uploadDir = "C:/Users/임형준/Desktop/산학/webserver/webserver";
         Path uploadPath = Paths.get(uploadDir);
@@ -185,9 +171,5 @@ public class AzureService {
         // 파일을 저장하는 이유는 결과를 확인하기 위해서 
     }
     
-    public XSSFSheet compressColumn(XSSFSheet sheet, int column_Length) // DB에 넣기 전 행을 압축시켜 표현할 함수
-	{
-    	
-	}
 }
 
