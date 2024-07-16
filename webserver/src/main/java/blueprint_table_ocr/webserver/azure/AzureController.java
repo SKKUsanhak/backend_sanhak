@@ -1,15 +1,10 @@
 package blueprint_table_ocr.webserver.azure;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
-import org.apache.poi.POIDocument;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,11 +15,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class AzureController {
-	
-	private AzureService service;
+
+	   private AzureService service;
+	   private ExcelService excelService;
 	   
-	   public AzureController(AzureService service) {
+	   public AzureController(AzureService service, ExcelService excelservice) {
 	      this.service = service;
+	      this.excelService = excelservice;
 	   }
 	   
 	   @PostMapping("/upload") // 사용자가 POST한 파일 다운받기 -> Talend API 사용해서 정상 작동 확인함. -> table을 리액트로 리턴
@@ -56,13 +53,15 @@ public class AzureController {
 	   }
 	   
 	   @PostMapping("/final-result")
-	   public ResponseEntity<String> XLSXToDB(@RequestParam("file") MultipartFile file, @RequestParam("ColumnRanges") String columnRanges) throws IOException {
-		   service.uploadToDB(file, columnRanges);
-		   // columnRanges 처리
-		   System.out.println("Column Ranges: " + columnRanges);
-		   
-		   // 성공 응답 반환
-		   return ResponseEntity.status(HttpStatus.OK).body("File uploaded successfully");
-	   }
+		public String SaveExcelDatabase (@RequestParam("file") MultipartFile file) {
+			try {
+				excelService.saveDb(file);
+				return "File uploaded and data saved to database successfully.";
+				} 
+			catch (Exception e) {
+				e.printStackTrace();
+				return "Failed to upload file and save data to database.";
+			}
+		}
 	   
 }

@@ -1,6 +1,5 @@
 package blueprint_table_ocr.webserver.azure;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -142,7 +141,7 @@ public class AzureService {
         return sheet;
     }
     
-    public boolean uploadToDB(MultipartFile file, String ColumnRanges) {
+    public boolean uploadToDB(MultipartFile file) {
     	// 파일 저장 경로 설정
         String uploadDir = "C:/Users/임형준/Desktop/산학/webserver/webserver";
         Path uploadPath = Paths.get(uploadDir);
@@ -169,6 +168,8 @@ public class AzureService {
             return false;
         }
         // 파일을 저장하는 이유는 결과를 확인하기 위해서 
+        
+        
     }
     
 }
