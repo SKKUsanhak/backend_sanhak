@@ -149,8 +149,15 @@ public class ExcelService {
 	}
 
 
-	public List<TableDoc> findTableById(long id) {//해당 파일
+	public List<TableDoc> findTableById(long id) {//해당 파일의 모든 테이블 보여주기
 		return docRepository.findByFileInfoId(id);
+	}
+
+
+	public List<TempTableData> findTempDataById(long tableId) {//특정 파일,테이블의 데이터들 보여주기
+		List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(tableId);
+		
+		return tempdatalists;
 	}
     
 

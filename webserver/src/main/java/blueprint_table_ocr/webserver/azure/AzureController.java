@@ -90,6 +90,14 @@ public class AzureController {
 			return tablelists;
 	   }
 	   
+	   @GetMapping("/show-temp-data")//해당 아이디를 가진 테이블의 템프 데이터  보여주기
+		public List<TempTableData> lilltables(@RequestParam long tableId) {
+			List<TempTableData> tempdatalists = excelService.findTempDataById(tableId);
+			return  tempdatalists;
+	   }
+	   
+	   
+	   
 	   
 		
 	   
