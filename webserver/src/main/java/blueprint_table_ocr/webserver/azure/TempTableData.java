@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class TableData {
+public class TempTableData {
 	@Id
 	@GeneratedValue
 	private Integer id;
@@ -24,7 +24,7 @@ public class TableData {
 	private TableDoc tableInfo;
 	
 	//private boolean firstColumn;
-	private boolean FinalData = true;
+	private boolean FinalData = false;
 
 	
 	public Integer getId() {
@@ -93,12 +93,6 @@ public class TableData {
 		FinalData = finalData;
 	}
 
-	
-	
-	
-	
-	
-	
 	
 	
 }

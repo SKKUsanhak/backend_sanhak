@@ -2,6 +2,7 @@ package blueprint_table_ocr.webserver.azure;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,21 +49,48 @@ public class AzureController {
 		   return "Upload Page";
 	   }
 	   
-	   @GetMapping("/hello") // 연결 테스트
-	   public String HelloPage() {
-		   return "Hello World";
+	 
+	   @PostMapping("/final-result")
+	    public String SaveExcelDatabase(@RequestPart("file") MultipartFile file, @RequestParam("fileName") String fileName) {
+	        try {
+	            excelService.saveTempDb(file,fileName);
+	            return "File uploaded and data saved to database successfully.";
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return "Failed to upload file and save data to database.";
+	        }
+	    }
+	   
+	   /*
+		@PostMapping("/find-excel-db")//기호중에 찾기
+		@ResponseBody	public List<TableData> FindFromDatabase (@RequestParam String kw) {
+			List<TableData> results = excelService.findFullRow(kw);
+			 return results; // 결과를 JSON 형식으로 
+		}
+		*/
+		
+		
+		@GetMapping("/show-file")//파일 리스트 보여주기
+		public List<OwnerFile> listAllfiles() {
+			List<OwnerFile> filelists = excelService.findAllFile();
+			return filelists;
+		}
+	   
+	   @GetMapping("/delete-file")//파일 삭제하기
+		public void DeleteFromDatabase (@RequestParam long id) {
+			excelService.deleteFile(id);
+			  
+		}
+	   
+	   
+	   
+	   @GetMapping("/show-table")//해당 아이디의 테이블 리스트 보여주기
+		public List<TableDoc> listAlltables(@RequestParam long id) {
+			List<TableDoc> tablelists = excelService.findTableById(id);
+			return tablelists;
 	   }
 	   
-	   @PostMapping("/final-result")
-		public String SaveExcelDatabase (@RequestParam("file") MultipartFile file) {
-			try {
-				excelService.saveDb(file);
-				return "File uploaded and data saved to database successfully.";
-				} 
-			catch (Exception e) {
-				e.printStackTrace();
-				return "Failed to upload file and save data to database.";
-			}
-		}
+	   
+		
 	   
 }

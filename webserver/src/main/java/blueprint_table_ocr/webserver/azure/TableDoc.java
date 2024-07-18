@@ -2,6 +2,11 @@ package blueprint_table_ocr.webserver.azure;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,10 +22,13 @@ public class TableDoc {
 	
 	private String tableTitle;
 	
-	@OneToMany(mappedBy="tableInfo")
+	@OneToMany(mappedBy="tableInfo",cascade = CascadeType.REMOVE)
+	@JsonManagedReference
+	@JsonIgnore
 	private List<TableData> tableDatas;
 	
-	@ManyToOne//(cascade = CascadeType.PERSIST)
+	@ManyToOne
+	@JsonBackReference
 	private OwnerFile fileInfo;
 	
 	

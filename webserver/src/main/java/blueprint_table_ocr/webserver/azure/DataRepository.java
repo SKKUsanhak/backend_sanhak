@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DataRepository extends JpaRepository<TableData,Long> {
-	List<TableData> findByContents(String contents);
 	List<TableData> findByrowNumber(Integer i);
+	List<TableData> findByContentsContaining(String contents);
 
 }
