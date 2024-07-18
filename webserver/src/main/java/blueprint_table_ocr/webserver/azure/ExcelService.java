@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -158,6 +159,24 @@ public class ExcelService {
 		List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(tableId);
 		
 		return tempdatalists;
+	}
+
+
+	public void updateTempCell(long cellid, String contents) {//temp단일 셀 수정하기 
+		Optional<TempTableData> temp = tempdataRepository.findById(cellid);
+		TempTableData tempCell = temp.get();
+		tempCell.setContents(contents);
+		tempdataRepository.save(tempCell);
+		
+	}
+
+
+	public void updateTableName(long tableid, String contents) {
+		Optional<TableDoc> temp = docRepository.findById(tableid);
+		TableDoc tableDoc = temp.get();
+		tableDoc.setTableTitle(contents);
+		docRepository.save(tableDoc);
+		
 	}
     
 

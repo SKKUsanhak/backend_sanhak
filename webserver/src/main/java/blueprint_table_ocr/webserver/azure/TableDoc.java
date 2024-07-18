@@ -27,6 +27,11 @@ public class TableDoc {
 	@JsonIgnore
 	private List<TableData> tableDatas;
 	
+	@OneToMany(mappedBy="tableInfo",cascade = CascadeType.REMOVE)
+	@JsonManagedReference
+	@JsonIgnore
+	private List<TempTableData> temptableDatas;
+	
 	@ManyToOne
 	@JsonBackReference
 	private OwnerFile fileInfo;

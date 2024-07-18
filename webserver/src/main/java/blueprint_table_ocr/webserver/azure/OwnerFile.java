@@ -1,5 +1,6 @@
 package blueprint_table_ocr.webserver.azure;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 
 @Entity
 public class OwnerFile {
@@ -23,6 +25,13 @@ public class OwnerFile {
 	@JsonManagedReference
 	@JsonIgnore
 	private List<TableDoc> tableDoc;
+	
+	private LocalDateTime createTime= LocalDateTime.now();
+	
+	@PrePersist
+	    protected void onCreate() {
+	        this.createTime = LocalDateTime.now();
+	    }
 
 	public Integer getId() {
 		return Id;

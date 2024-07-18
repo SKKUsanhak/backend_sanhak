@@ -9,7 +9,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -84,7 +86,7 @@ public class AzureController {
 	   
 	   
 	   
-	   @GetMapping("/show-table")//해당 아이디의 테이블 리스트 보여주기
+	   @GetMapping("/show-table")//해당 아이디를 가진 파일의 테이블 리스트 보여주기
 		public List<TableDoc> listAlltables(@RequestParam long id) {
 			List<TableDoc> tablelists = excelService.findTableById(id);
 			return tablelists;
@@ -94,6 +96,16 @@ public class AzureController {
 		public List<TempTableData> lilltables(@RequestParam long tableId) {
 			List<TempTableData> tempdatalists = excelService.findTempDataById(tableId);
 			return  tempdatalists;
+	   }
+	   
+	   @PatchMapping("/update-cell")//원하는 셀 업데이트(tempdata용)
+	   public void updateCell (@RequestParam long cellid ,@RequestBody String contents) { //단일 셀 수정
+		   excelService.updateTempCell(cellid, contents);
+	   }
+	   
+	   @PatchMapping("/update-table-name")//원하는 테이블 이름 업데이트
+	   public void updateTableName (@RequestParam long tableid ,@RequestBody String contents) { //단일 셀 수정
+		   excelService.updateTableName(tableid, contents);
 	   }
 	   
 	   
