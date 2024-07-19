@@ -54,7 +54,7 @@ public class AzureController {
 	   }
 	   
 	 
-	   @PostMapping("/final-result")
+	   @PostMapping("/final-result")//db에 excel파일을 저장
 	    public String SaveExcelDatabase(@RequestPart("file") MultipartFile file, @RequestParam("fileName") String fileName) {
 	        try {
 	            excelService.saveTempDb(file,fileName);
@@ -65,14 +65,8 @@ public class AzureController {
 	        }
 	    }
 	   
-	   /*
-		@PostMapping("/find-excel-db")//기호중에 찾기
-		@ResponseBody	public List<TableData> FindFromDatabase (@RequestParam String kw) {
-			List<TableData> results = excelService.findFullRow(kw);
-			 return results; // 결과를 JSON 형식으로 
-		}
-		*/
-		
+	  
+		////////////////////////////////////////////////////////////////////////////////////////////crud part
 		 
 	   //delete
 	   @DeleteMapping("/delete-file")//파일 삭제하기
@@ -142,6 +136,33 @@ public class AzureController {
 	   @PostMapping("/create-new-cell")
 	   public String createTable(@RequestBody CreateRequest createinfo) {
 		   return excelService.createNewCell(createinfo);
+		    
+	   }
+	   
+	   @PostMapping("/create-new-column")//열 새로 만들기
+	   public String createcolumn(@RequestParam long tableid,@RequestParam int colindex,@RequestBody Map<String,String> Content) {
+		   String contents = Content.get("contents");
+		   return excelService.createNewColumn(tableid,colindex,contents);
+		   
+		   
+	   }
+	   
+	   /////////////////////////////////////////////////////////////////////////////////////////final data part
+	   
+	   @GetMapping("/save-final-data")//그냥 지금 있는거 그대로 final로 옮기기
+	   public void saveFinal() {
+		   excelService.saveFinalDb();
+	   }
+	   
+	   @PatchMapping("/update-final-data")//final data 업데이트 하기
+	   public String updateFinal(@RequestParam long cellid ,@RequestBody Map<String,String> Content) {
+		   if(excelService.isFinalTableEmpty()==true) {
+			   excelService.saveFinalDb();
+		   }
+		   String contents = Content.get("contents");
+		   excelService.updateFinalCell(cellid, contents);
+		   return "update complete";
+		    
 		   
 	   }
 	   
@@ -150,3 +171,13 @@ public class AzureController {
 		
 	   
 }
+
+
+
+/*
+		@PostMapping("/find-excel-db")//기호중에 찾기
+		@ResponseBody	public List<TableData> FindFromDatabase (@RequestParam String kw) {
+			List<TableData> results = excelService.findFullRow(kw);
+			 return results; // 결과를 JSON 형식으로 
+		}
+		*/

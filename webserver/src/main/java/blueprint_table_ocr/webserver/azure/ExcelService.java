@@ -234,6 +234,53 @@ public class ExcelService {
 		  
 		
 	}
+
+
+	public String createNewColumn(long tableid, int colindex, String contents) {
+		TableDoc tableinfo = docRepository.findById(tableid).get();
+		TempTableData newTempData = new TempTableData();
+		newTempData.setTableInfo(tableinfo);
+		newTempData.setRowNumber(-1);
+		newTempData.setContents(null);
+		newTempData.setColumnNumber(colindex);
+		newTempData.setColumnName(contents);
+		tempdataRepository.save(newTempData);
+		return "new column created";
+		
+	}
+
+	//data db에 저장만 하는거
+	
+	public void saveFinalDb() {
+		 List<TempTableData> tempDataList = tempdataRepository.findAll();		
+		 List<TableData> tableDataList = new ArrayList<>();
+		 for(TempTableData cell : tempDataList) {
+			 TableData tableData = new TableData();
+			 tableData.setColumnName(cell.getColumnName());
+			 tableData.setColumnNumber(cell.getColumnNumber());
+			 tableData.setRowNumber(cell.getRowNumber());
+			 tableData.setTableInfo(cell.getTableInfo());
+			 tableData.setContents(cell.getContents());
+			 tableDataList.add(tableData);
+		 }
+		 dataRepository.saveAll(tableDataList);
+	}
+
+
+	public boolean isFinalTableEmpty() {//파이널 데이터가 비었는지 확인
+		 return dataRepository.countAll() == 0;
+		
+	}
+
+
+	public void updateFinalCell(long cellid, String contents) {
+		Optional<TableData> temp = dataRepository.findById(cellid);
+		TableData finalCell = temp.get();
+		finalCell.setContents(contents);
+		dataRepository.save(finalCell);
+		
+		
+	}
     
 
 }
