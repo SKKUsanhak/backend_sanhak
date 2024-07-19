@@ -9,6 +9,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,7 +75,7 @@ public class AzureController {
 		
 		 
 	   //delete
-	   @GetMapping("/delete-file")//파일 삭제하기
+	   @DeleteMapping("/delete-file")//파일 삭제하기
 		public void DeleteFromDatabase (@RequestParam long id) {
 			excelService.deleteFile(id);
 			  
@@ -125,13 +126,13 @@ public class AzureController {
 	   }
 	   
 	   ////create
-	   @PostMapping("/create-new-table")
+	   @PostMapping("/create-new-table")//테이블 새로 만들기
 	   public void createTable (@RequestParam long fileid, @RequestBody Map<String,String> Content) {
 		   String tablename = Content.get("contents");
 		   excelService.createNewTable(fileid, tablename);
 	   }
 	   
-	   
+	   //새로운 셀 만들기
 	   public static class CreateRequest {
 	        public long tableId;
 	        public int row;
