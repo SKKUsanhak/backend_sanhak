@@ -72,15 +72,12 @@ public class AzureController {
 			 return results; // 결과를 JSON 형식으로 
 		}
 		*/
-		
 		 
 	   //delete
 	   @DeleteMapping("/delete-file")//파일 삭제하기
 		public void DeleteFromDatabase (@RequestParam long id) {
 			excelService.deleteFile(id);
-			  
 		}
-	   
 	   
 	   //read
 		@GetMapping("/show-file")//파일 리스트 보여주기
@@ -101,7 +98,6 @@ public class AzureController {
 			return  tempdatalists;
 	   }
 	   
-	   
 	   //update
 	   @PatchMapping("/update-cell")//원하는 셀 업데이트(tempdata용)
 	   public void updateCell (@RequestParam long cellid ,@RequestBody Map<String,String> Content) { 
@@ -114,10 +110,6 @@ public class AzureController {
 		   String contents = Content.get("contents");
 		   excelService.updateTableName(tableid, contents);
 	   }
-	   
-	 
-	   
-	   
 	   
 	   @PatchMapping("/update-column-name")//열의 이름 업데이트
 	   public void updateColumnName (@RequestParam long tableid, @RequestParam int columnnumber,@RequestBody Map<String,String> Content) {
@@ -139,10 +131,10 @@ public class AzureController {
 	        public int column;
 	        public String contents;
 	    }
+	   
 	   @PostMapping("/create-new-cell")
 	   public String createTable(@RequestBody CreateRequest createinfo) {
 		   return excelService.createNewCell(createinfo);
-		   
 	   }
 	   
 	   
