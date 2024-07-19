@@ -3,6 +3,7 @@ package blueprint_table_ocr.webserver.azure;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpHeaders;
@@ -71,13 +72,8 @@ public class AzureController {
 		}
 		*/
 		
-		
-		@GetMapping("/show-file")//파일 리스트 보여주기
-		public List<OwnerFile> listAllfiles() {
-			List<OwnerFile> filelists = excelService.findAllFile();
-			return filelists;
-		}
-	   
+		 
+	   //delete
 	   @GetMapping("/delete-file")//파일 삭제하기
 		public void DeleteFromDatabase (@RequestParam long id) {
 			excelService.deleteFile(id);
@@ -85,7 +81,13 @@ public class AzureController {
 		}
 	   
 	   
-	   
+	   //read
+		@GetMapping("/show-file")//파일 리스트 보여주기
+		public List<OwnerFile> listAllfiles() {
+			List<OwnerFile> filelists = excelService.findAllFile();
+			return filelists;
+		}
+		
 	   @GetMapping("/show-table")//해당 아이디를 가진 파일의 테이블 리스트 보여주기
 		public List<TableDoc> listAlltables(@RequestParam long id) {
 			List<TableDoc> tablelists = excelService.findTableById(id);
@@ -98,16 +100,49 @@ public class AzureController {
 			return  tempdatalists;
 	   }
 	   
+	   
+	   //update
 	   @PatchMapping("/update-cell")//원하는 셀 업데이트(tempdata용)
-	   public void updateCell (@RequestParam long cellid ,@RequestBody String contents) { //단일 셀 수정
+	   public void updateCell (@RequestParam long cellid ,@RequestBody Map<String,String> Content) { 
+		   String contents = Content.get("contents");
 		   excelService.updateTempCell(cellid, contents);
 	   }
 	   
 	   @PatchMapping("/update-table-name")//원하는 테이블 이름 업데이트
-	   public void updateTableName (@RequestParam long tableid ,@RequestBody String contents) { //단일 셀 수정
+	   public void updateTableName (@RequestParam long tableid ,@RequestBody Map<String,String> Content) { 
+		   String contents = Content.get("contents");
 		   excelService.updateTableName(tableid, contents);
 	   }
 	   
+	 
+	   
+	   
+	   
+	   @PatchMapping("/update-column-name")//열의 이름 업데이트
+	   public void updateColumnName (@RequestParam long tableid, @RequestParam int columnnumber,@RequestBody Map<String,String> Content) {
+		   String contents = Content.get("contents");
+		   excelService.updateColumnName(tableid, columnnumber,contents);
+	   }
+	   
+	   ////create
+	   @PostMapping("/create-new-table")
+	   public void createTable (@RequestParam long fileid, @RequestBody Map<String,String> Content) {
+		   String tablename = Content.get("contents");
+		   excelService.createNewTable(fileid, tablename);
+	   }
+	   
+	   
+	   public static class CreateRequest {
+	        public long tableId;
+	        public int row;
+	        public int column;
+	        public String contents;
+	    }
+	   @PostMapping("/create-new-cell")
+	   public String createTable(@RequestBody CreateRequest createinfo) {
+		   return excelService.createNewCell(createinfo);
+		   
+	   }
 	   
 	   
 	   

@@ -17,7 +17,7 @@ import jakarta.persistence.PrePersist;
 public class OwnerFile {
 	@Id
 	@GeneratedValue
-	private Integer Id;
+	private Long Id;
 	
 	private String fileName;
 	
@@ -30,14 +30,14 @@ public class OwnerFile {
 	
 	@PrePersist
 	    protected void onCreate() {
-	        this.createTime = LocalDateTime.now();
+	        this.setCreateTime(LocalDateTime.now());
 	    }
 
-	public Integer getId() {
+	public Long getId() {
 		return Id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		Id = id;
 	}
 
@@ -55,6 +55,14 @@ public class OwnerFile {
 
 	public void setTableDoc(List<TableDoc> tableDoc) {
 		this.tableDoc = tableDoc;
+	}
+
+	public LocalDateTime getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(LocalDateTime createTime) {
+		this.createTime = createTime;
 	}
 
 }

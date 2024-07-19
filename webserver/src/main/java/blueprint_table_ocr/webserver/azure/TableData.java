@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 public class TableData {
 	@Id
 	@GeneratedValue
-	private Integer id;
+	private Long id;
 	
 	private Integer rowNumber;
 	private Integer columnNumber;
@@ -27,11 +27,11 @@ public class TableData {
 	private boolean FinalData = true;
 
 	
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

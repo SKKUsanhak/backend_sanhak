@@ -2,10 +2,8 @@ package blueprint_table_ocr.webserver.azure;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,6 +12,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import blueprint_table_ocr.webserver.azure.AzureController.CreateRequest;
 
 @Service
 public class ExcelService {
@@ -83,8 +83,8 @@ public class ExcelService {
 		
 	}
 	
-	
-	public void saveTempDb(MultipartFile file, String fileName)  throws IOException{///////////////////////데이터베이스에 삽입하는 코드
+	///
+	public void saveTempDb(MultipartFile file, String fileName)  throws IOException{///////////////////////데이터베이스에 삽입하는 코드 for임시데이터
 		try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
 			OwnerFile ownerFile = new OwnerFile(); 
 			ownerFile.setFileName(fileName);
@@ -137,13 +137,13 @@ public class ExcelService {
 	
 	
  
-
+///delete
 	public void deleteFile(long id) {///////////////////////////////////////////////////원하는 파일을 삭제하는 코드
 		fileRepository.deleteById(id);
 		
 	}
 
-
+///read
 	public List<OwnerFile> findAllFile() {/////////////////////////////////////전체 파일 보여주는 코드
 		 
 		return fileRepository.findAll();
@@ -156,11 +156,11 @@ public class ExcelService {
 
 
 	public List<TempTableData> findTempDataById(long tableId) {//특정 파일,테이블의 데이터들 보여주기
-		List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(tableId);
+		List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(tableId).get();
 		
 		return tempdatalists;
 	}
-
+////update
 
 	public void updateTempCell(long cellid, String contents) {//temp단일 셀 수정하기 
 		Optional<TempTableData> temp = tempdataRepository.findById(cellid);
@@ -171,11 +171,67 @@ public class ExcelService {
 	}
 
 
-	public void updateTableName(long tableid, String contents) {
+	public void updateTableName(long tableid, String contents) {//테이블 이름 수정하기
 		Optional<TableDoc> temp = docRepository.findById(tableid);
 		TableDoc tableDoc = temp.get();
 		tableDoc.setTableTitle(contents);
 		docRepository.save(tableDoc);
+		
+	}
+
+
+	public void updateColumnName(long tableid, int columnnumber, String contents) {//열 이름 수정하기
+		List<TempTableData> dataoftable = tempdataRepository.findByTableInfoId(tableid).get();
+		for(TempTableData cell :dataoftable) {
+			if(cell.getColumnNumber() == columnnumber) {
+				cell.setColumnName(contents);
+				tempdataRepository.save(cell);
+			}
+		}
+	}
+///create
+	public void createNewTable(long fileid, String tablename) {
+		Optional<OwnerFile> file = fileRepository.findById(fileid);
+		OwnerFile fileinfo = file.get();
+		TableDoc newTable = new TableDoc();
+		newTable.setFileInfo(fileinfo);
+		newTable.setTableTitle(tablename);
+		docRepository.save(newTable);
+		
+	}
+
+
+	public String createNewCell(CreateRequest createinfo) {
+		List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(createinfo.tableId).get();
+		for(TempTableData cell:tempdatalists) {
+			if(cell.getRowNumber() == createinfo.row && cell.getColumnNumber() == createinfo.column) {
+				return "cell is already present";
+			}
+		}
+		
+		
+		TableDoc tableinfo = docRepository.findById(createinfo.tableId).get();
+		TempTableData newTempData = new TempTableData();
+		newTempData.setColumnNumber(createinfo.column);
+		newTempData.setRowNumber(createinfo.row);
+		newTempData.setContents(createinfo.contents);
+		newTempData.setTableInfo(tableinfo);
+		//열 이름 얻기
+		 
+		int flag=1;
+		for(TempTableData x:tempdatalists) {
+			if(x.getColumnNumber()==createinfo.column) {
+				String Cname = x.getColumnName();
+				newTempData.setColumnName(Cname);
+				flag=0;
+				break;
+			}
+		}
+		if(flag==1)newTempData.setColumnName("column is not present");
+		tempdataRepository.save(newTempData);
+		
+		return "cell is created";
+		  
 		
 	}
     
