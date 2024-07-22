@@ -71,6 +71,12 @@ public class AzureController {
 			excelService.deleteFile(id);
 		}
 	   
+	   @DeleteMapping("/delete-row")
+	   public void DeleteRow(@RequestParam("tableid") long tableid,@RequestParam("rowindex") int rowindex) {
+		   excelService.deleteTempRow(tableid,rowindex);
+	   }
+	   
+	   
 	   //read
 		@GetMapping("/show-file")//파일 리스트 보여주기
 		public List<OwnerFile> listAllfiles() {
@@ -91,10 +97,15 @@ public class AzureController {
 	   }
 	   
 	   //update
+	   public static class UpdateRequest {
+	        public long tableId;
+	        public int row;
+	        public int column;
+	        public String contents;
+	    }
 	   @PatchMapping("/update-cell")//원하는 셀 업데이트(tempdata용)
-	   public void updateCell (@RequestParam long cellid ,@RequestBody Map<String,String> Content) { 
-		   String contents = Content.get("contents");
-		   excelService.updateTempCell(cellid, contents);
+	   public void updateCell (@RequestBody UpdateRequest createinfo) { 
+		   excelService.updateTempCell(createinfo);
 	   }
 	   
 	   @PatchMapping("/update-table-name")//원하는 테이블 이름 업데이트
@@ -116,26 +127,13 @@ public class AzureController {
 		   excelService.createNewTable(fileid, tablename);
 	   }
 	   
-	   //새로운 셀 만들기
-	   public static class CreateRequest {
-	        public long tableId;
-	        public int row;
-	        public int column;
-	        public String contents;
-	    }
-	   
-	   @PostMapping("/create-new-cell")
-	   public String createTable(@RequestBody CreateRequest createinfo) {
-		   return excelService.createNewCell(createinfo); 
-	   }
-	   
 	   @PostMapping("/create-new-column")//열 새로 만들기
 	   public String createcolumn(@RequestParam("tableid") long tableid,@RequestParam("colindex") int colindex,@RequestBody Map<String,String> Content) {
 		   String contents = Content.get("contents");
 		   return excelService.createNewColumn(tableid,colindex,contents);
 	   }
 	   
-	   @PostMapping("/create-new-row")//열 새로 만들기
+	   @PostMapping("/create-new-row")//행 새로 만들기
 	   public String createrow(@RequestParam("tableid") long tableid,@RequestParam("rowindex") int rowindex) {
 		   return excelService.createNewRow(tableid,rowindex);
 	   }
