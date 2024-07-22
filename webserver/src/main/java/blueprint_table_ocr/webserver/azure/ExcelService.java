@@ -91,7 +91,7 @@ public class ExcelService {
 	
  
 ///delete
-	public void deleteFile(long id) {///////////////////////////////////////////////////원하는 파일을 삭제하는 코드
+	public void deleteFile(long id) {//원하는 파일을 삭제하는 코드
 		fileRepository.deleteById(id);
 		
 	}
@@ -116,6 +116,28 @@ public class ExcelService {
 	}
 	
 
+	public void deleteTempColumn(long tableid, int columnindex) {
+		List<TempTableData> tempdatalist = tempdataRepository.findByTableInfoId(tableid).get();
+		for(TempTableData cell:tempdatalist) {
+			if(cell.getColumnNumber()==columnindex) {
+				tempdataRepository.deleteById(cell.getId());
+			}
+		}
+		
+		for(TempTableData cell:tempdatalist) {
+			if(cell.getColumnNumber()>columnindex) {
+				int currentcolumnnumber = cell.getColumnNumber();
+				cell.setColumnNumber(currentcolumnnumber-1);
+				tempdataRepository.save(cell);
+				
+			}
+		}
+		
+		
+		
+	}
+	
+
 ///read
 	public List<OwnerFile> findAllFile() {/////////////////////////////////////전체 파일 보여주는 코드
 		 
@@ -133,14 +155,13 @@ public class ExcelService {
 		
 		return tempdatalists;
 	}
-////update
-	
 
-	public void updateTempCell(UpdateRequest createinfo) {
-		List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(createinfo.tableId).get();
+////update
+	public void updateTempCell(UpdateRequest updateinfo) {
+		List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(updateinfo.tableId).get();
 		for(TempTableData cell:tempdatalists) {
-			if(cell.getRowNumber() == createinfo.row && cell.getColumnNumber() == createinfo.column) {
-				cell.setContents(createinfo.contents);
+			if(cell.getRowNumber() == updateinfo.row && cell.getColumnNumber() == updateinfo.column) {
+				cell.setContents(updateinfo.contents);
 				tempdataRepository.save(cell);
 			}
 		}
@@ -166,6 +187,7 @@ public class ExcelService {
 			}
 		}
 	}
+	
 ///create
 	public void createNewTable(long fileid, String tablename) {
 		Optional<OwnerFile> file = fileRepository.findById(fileid);
@@ -176,42 +198,6 @@ public class ExcelService {
 		docRepository.save(newTable);
 		
 	}
-
-/*
-	public String createNewCell(CreateRequest createinfo) {
-		List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(createinfo.tableId).get();
-		for(TempTableData cell:tempdatalists) {
-			if(cell.getRowNumber() == createinfo.row && cell.getColumnNumber() == createinfo.column) {
-				return "cell is already present";
-			}
-		}
-		
-		
-		TableDoc tableinfo = docRepository.findById(createinfo.tableId).get();
-		TempTableData newTempData = new TempTableData();
-		newTempData.setColumnNumber(createinfo.column);
-		newTempData.setRowNumber(createinfo.row);
-		newTempData.setContents(createinfo.contents);
-		newTempData.setTableInfo(tableinfo);
-		//열 이름 얻기
-		 
-		int flag=1;
-		for(TempTableData x:tempdatalists) {
-			if(x.getColumnNumber()==createinfo.column) {
-				String Cname = x.getColumnName();
-				newTempData.setColumnName(Cname);
-				flag=0;
-				break;
-			}
-		}
-		if(flag==1)newTempData.setColumnName("column is not present");
-		tempdataRepository.save(newTempData);
-		
-		return "cell is created";
-		  
-		
-	}
-*/
 
 	public String createNewColumn(long tableid, int colindex, String contents) {
 		TableDoc tableinfo = docRepository.findById(tableid).get();
@@ -266,8 +252,7 @@ public class ExcelService {
 		return "new row created";
 	}
     
-
-	//data db에 저장만 하는거
+//data db에 저장만 하는거 finaldb part
 	
 	public void saveFinalDb() {
 		 List<TempTableData> tempDataList = tempdataRepository.findAll();		
@@ -302,7 +287,6 @@ public class ExcelService {
 
 
 
- 
 
  
 }

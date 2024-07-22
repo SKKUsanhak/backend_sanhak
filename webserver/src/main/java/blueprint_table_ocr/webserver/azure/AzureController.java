@@ -71,9 +71,14 @@ public class AzureController {
 			excelService.deleteFile(id);
 		}
 	   
-	   @DeleteMapping("/delete-row")
+	   @DeleteMapping("/delete-row")//행 삭제하고 아래있는거 땡기기
 	   public void DeleteRow(@RequestParam("tableid") long tableid,@RequestParam("rowindex") int rowindex) {
 		   excelService.deleteTempRow(tableid,rowindex);
+	   }
+	   
+	   @DeleteMapping("/delete-column")//열 삭제하고 아래있는거 땡기기
+	   public void DeleteColumn(@RequestParam("tableid") long tableid,@RequestParam("columnindex") int columnindex) {
+		   excelService.deleteTempColumn(tableid,columnindex);
 	   }
 	   
 	   
@@ -104,8 +109,8 @@ public class AzureController {
 	        public String contents;
 	    }
 	   @PatchMapping("/update-cell")//원하는 셀 업데이트(tempdata용)
-	   public void updateCell (@RequestBody UpdateRequest createinfo) { 
-		   excelService.updateTempCell(createinfo);
+	   public void updateCell (@RequestBody UpdateRequest updateinfo) { 
+		   excelService.updateTempCell(updateinfo);
 	   }
 	   
 	   @PatchMapping("/update-table-name")//원하는 테이블 이름 업데이트
