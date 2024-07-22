@@ -66,14 +66,7 @@ public class TempTableData {
 	public void setRowNumber(Integer rowNumber) {
 		this.rowNumber = rowNumber;
 	}
-	/*
-	public boolean isFirstColumn() {
-		return firstColumn;
-	}
 
-	public void setFirstColumn(boolean firstColumn) {
-		this.firstColumn = firstColumn;
-	}*/
 
 	public Integer getColumnNumber() {
 		return columnNumber;

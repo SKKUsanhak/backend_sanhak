@@ -2,7 +2,9 @@ package blueprint_table_ocr.webserver.azure;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -259,6 +261,36 @@ public class ExcelService {
 		return "new column created";
 		
 	}
+	
+	
+	public String createNewRow(long tableid, int rowindex) {//새로운 빈 행 만들기
+		TableDoc tableinfo = docRepository.findById(tableid).get();
+		List<TempTableData> tempList = tempdataRepository.findByTableInfoId(tableid).get();
+		int Max=-1;
+		Map<Integer, String> columnMap = new HashMap<>();
+		for(TempTableData cell: tempList) {
+			if(cell.getColumnNumber()>Max) Max=cell.getColumnNumber();
+			columnMap.put(cell.getColumnNumber(), cell.getColumnName());
+		}
+		
+		
+		List<TempTableData> tableDataList = new ArrayList<>();
+		for(int i=0;i<=Max;i++) {
+			TempTableData tableData = new TempTableData();
+			tableData.setColumnName(columnMap.get(i));
+			tableData.setColumnNumber(i);
+			tableData.setRowNumber(rowindex);
+			tableData.setTableInfo(tableinfo);
+			tableData.setContents("");
+			tableDataList.add(tableData);
+		}
+		tempdataRepository.saveAll(tableDataList);
+		
+		
+		
+		return "new row created";
+	}
+    
 
 	//data db에 저장만 하는거
 	
@@ -292,7 +324,9 @@ public class ExcelService {
 		
 		
 	}
-    
+
+
+	 
 
 }
 
