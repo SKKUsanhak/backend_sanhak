@@ -1,6 +1,7 @@
 package blueprint_table_ocr.webserver.azure.service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -200,12 +201,12 @@ public class ExcelService {
 	}
 
 
-	public List<? extends Data> findTempDataById(long tableId) {//특정 파일,테이블의 데이터들 보여주기
+	public List<? extends Data> findTempDataById(long tableId) {//특정 파일,테이블의 데이터들 보여주기 for temp data
 		List<? extends Data> tempdatalists = tempdataRepository.findByTableInfoId(tableId).get();
 		return tempdatalists;
 	}
 
-	public List<? extends Data> findDataById(long tableId) {
+	public List<? extends Data> findDataById(long tableId) {//for final data
 		List<? extends Data> datalists = dataRepository.findByTableInfoId(tableId).get();
 		return datalists;
 	}
@@ -213,6 +214,13 @@ public class ExcelService {
 
 
 ////update
+
+	public void updateDate(long fileid) {
+		OwnerFile file = fileRepository.findById(fileid).get();
+		file.setUpdateTime(LocalDateTime.now());
+		fileRepository.save(file);
+	}
+
 	public void updateCell(UpdateRequest updateinfo) {
 		if(isFinalTable(updateinfo.tableId)==true) {
 			List<TableData> datalists = dataRepository.findByTableInfoId(updateinfo.tableId).get();
@@ -275,6 +283,7 @@ public class ExcelService {
 		TableDoc newTable = new TableDoc();
 		newTable.setFileInfo(fileinfo);
 		newTable.setTableTitle(tablename);
+		newTable.setFinalData(false);
 		docRepository.save(newTable);
 		TempTableData basicCell = new TempTableData();
 		basicCell.setColumnName("");
@@ -389,7 +398,7 @@ public class ExcelService {
     
 //data 
 
-	public void saveToFinalTable(long tableid) {
+	public void saveToFinalTable(long tableid) {//final table로 최초로 옮길 시 실행되는 매서드
 		List<TempTableData> tempDataList = tempdataRepository.findByTableInfoId(tableid).get();
 		List<TableData> tableDataList = new ArrayList<>();
 		for(TempTableData cell : tempDataList) {//final로 옮기기
@@ -418,7 +427,6 @@ public class ExcelService {
 		if(docRepository.findById(tableId).get().isFinalData()==true) return true;
 		return false;
 	}
-
 
 
  

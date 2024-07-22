@@ -137,6 +137,10 @@ public class AzureController {
 		   String contents = Content.get("contents");
 		   excelService.updateColumnName(tableid, columnnumber,contents);
 	   }
+	   @PatchMapping("/update-date")
+	   public void updateDate(@RequestParam("fileid") long fileid){
+		   excelService.updateDate(fileid);
+	   }
 	   
 	   ////create
 	   @PostMapping("/create-new-table")//테이블 새로 만들기
