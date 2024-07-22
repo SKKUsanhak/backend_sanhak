@@ -64,17 +64,12 @@ public class AzureController {
 	            return "Failed to upload file and save data to database.";
 	        }
 	    }
-	   
-	  
-		////////////////////////////////////////////////////////////////////////////////////////////crud part
 		 
 	   //delete
 	   @DeleteMapping("/delete-file")//파일 삭제하기
 		public void DeleteFromDatabase (@RequestParam long id) {
 			excelService.deleteFile(id);
-			  
 		}
-	   
 	   
 	   //read
 		@GetMapping("/show-file")//파일 리스트 보여주기
@@ -95,7 +90,6 @@ public class AzureController {
 			return  tempdatalists;
 	   }
 	   
-	   
 	   //update
 	   @PatchMapping("/update-cell")//원하는 셀 업데이트(tempdata용)
 	   public void updateCell (@RequestParam long cellid ,@RequestBody Map<String,String> Content) { 
@@ -108,10 +102,6 @@ public class AzureController {
 		   String contents = Content.get("contents");
 		   excelService.updateTableName(tableid, contents);
 	   }
-	   
-	 
-	   
-	   
 	   
 	   @PatchMapping("/update-column-name")//열의 이름 업데이트
 	   public void updateColumnName (@RequestParam long tableid, @RequestParam int columnnumber,@RequestBody Map<String,String> Content) {
@@ -133,10 +123,10 @@ public class AzureController {
 	        public int column;
 	        public String contents;
 	    }
+	   
 	   @PostMapping("/create-new-cell")
 	   public String createTable(@RequestBody CreateRequest createinfo) {
-		   return excelService.createNewCell(createinfo);
-		    
+		   return excelService.createNewCell(createinfo); 
 	   }
 	   
 	   @PostMapping("/create-new-column")//열 새로 만들기
@@ -168,22 +158,6 @@ public class AzureController {
 		   excelService.updateFinalCell(cellid, contents);
 		
 		   return "update complete";
-		
-		   
+
 	   }
-	   
-	   
-	   
-		
-	   
 }
-
-
-
-/*
-		@PostMapping("/find-excel-db")//기호중에 찾기
-		@ResponseBody	public List<TableData> FindFromDatabase (@RequestParam String kw) {
-			List<TableData> results = excelService.findFullRow(kw);
-			 return results; // 결과를 JSON 형식으로 
-		}
-		*/
