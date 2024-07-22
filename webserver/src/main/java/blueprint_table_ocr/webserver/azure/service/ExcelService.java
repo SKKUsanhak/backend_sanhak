@@ -91,7 +91,7 @@ public class ExcelService {
 		            }
 		        }
 				 tempdataRepository.saveAll(temptableDataList);
-			
+			   
 			}
 		}
 		
@@ -106,41 +106,81 @@ public class ExcelService {
 		
 	}
 	
-	public void deleteTempRow(long tableid, int rowindex) {
-		List<TempTableData> tempdatalist = tempdataRepository.findByTableInfoId(tableid).get();
-		for(TempTableData cell:tempdatalist) {
-			if(cell.getRowNumber()==rowindex) {
-				tempdataRepository.deleteById(cell.getId());
+	public void deleteRow(long tableid, int rowindex) {
+		if(isFinalTable(tableid)==true) {
+			List<TableData> datalist = dataRepository.findByTableInfoId(tableid).get();
+			for(TableData cell:datalist) {
+				if(cell.getRowNumber()==rowindex) {
+					dataRepository.deleteById(cell.getId());
+				}
+			}
+			
+			for(TableData cell:datalist) {
+				if(cell.getRowNumber()>rowindex) {
+					int currentrownumber = cell.getRowNumber();
+					cell.setRowNumber(currentrownumber-1);
+					dataRepository.save(cell);
+					
+				}
 			}
 		}
-		
-		for(TempTableData cell:tempdatalist) {
-			if(cell.getRowNumber()>rowindex) {
-				int currentrownumber = cell.getRowNumber();
-				cell.setRowNumber(currentrownumber-1);
-				tempdataRepository.save(cell);
-				
+		else {
+			List<TempTableData> tempdatalist = tempdataRepository.findByTableInfoId(tableid).get();
+			for(TempTableData cell:tempdatalist) {
+				if(cell.getRowNumber()==rowindex) {
+					tempdataRepository.deleteById(cell.getId());
+				}
 			}
+			
+			for(TempTableData cell:tempdatalist) {
+				if(cell.getRowNumber()>rowindex) {
+					int currentrownumber = cell.getRowNumber();
+					cell.setRowNumber(currentrownumber-1);
+					tempdataRepository.save(cell);
+					
+				}
+			}
+			
 		}
 		
 	}
 	
 
-	public void deleteTempColumn(long tableid, int columnindex) {
-		List<TempTableData> tempdatalist = tempdataRepository.findByTableInfoId(tableid).get();
-		for(TempTableData cell:tempdatalist) {
-			if(cell.getColumnNumber()==columnindex) {
-				tempdataRepository.deleteById(cell.getId());
+	public void deleteColumn(long tableid, int columnindex) {
+		if(isFinalTable(tableid)==true) {
+			List<TableData> datalist = dataRepository.findByTableInfoId(tableid).get();
+			for(TableData cell:datalist) {
+				if(cell.getColumnNumber()==columnindex) {
+					dataRepository.deleteById(cell.getId());
+				}
+			}
+			
+			for(TableData cell:datalist) {
+				if(cell.getColumnNumber()>columnindex) {
+					int currentcolumnnumber = cell.getColumnNumber();
+					cell.setColumnNumber(currentcolumnnumber-1);
+					dataRepository.save(cell);
+					
+				}
 			}
 		}
-		
-		for(TempTableData cell:tempdatalist) {
-			if(cell.getColumnNumber()>columnindex) {
-				int currentcolumnnumber = cell.getColumnNumber();
-				cell.setColumnNumber(currentcolumnnumber-1);
-				tempdataRepository.save(cell);
-				
+		else {
+			List<TempTableData> tempdatalist = tempdataRepository.findByTableInfoId(tableid).get();
+			for(TempTableData cell:tempdatalist) {
+				if(cell.getColumnNumber()==columnindex) {
+					tempdataRepository.deleteById(cell.getId());
+				}
 			}
+			
+			for(TempTableData cell:tempdatalist) {
+				if(cell.getColumnNumber()>columnindex) {
+					int currentcolumnnumber = cell.getColumnNumber();
+					cell.setColumnNumber(currentcolumnnumber-1);
+					tempdataRepository.save(cell);
+					
+				}
+			}
+			
 		}
 		
 		
@@ -148,7 +188,7 @@ public class ExcelService {
 	}
 	
 
-///read
+///read//수정할것 없이 두 케이스에 대해 모두 작동
 	public List<OwnerFile> findAllFile() {/////////////////////////////////////전체 파일 보여주는 코드
 		 
 		return fileRepository.findAll();
@@ -173,17 +213,29 @@ public class ExcelService {
 
 
 ////update
-	public void updateTempCell(UpdateRequest updateinfo) {
-		List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(updateinfo.tableId).get();
-		for(TempTableData cell:tempdatalists) {
-			if(cell.getRowNumber() == updateinfo.row && cell.getColumnNumber() == updateinfo.column) {
-				cell.setContents(updateinfo.contents);
-				tempdataRepository.save(cell);
+	public void updateCell(UpdateRequest updateinfo) {
+		if(isFinalTable(updateinfo.tableId)==true) {
+			List<TableData> datalists = dataRepository.findByTableInfoId(updateinfo.tableId).get();
+			for(TableData cell:datalists) {
+				if(cell.getRowNumber() == updateinfo.row && cell.getColumnNumber() == updateinfo.column) {
+					cell.setContents(updateinfo.contents);
+					dataRepository.save(cell);
+				}
 			}
 		}
 		
+		else {
+			List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(updateinfo.tableId).get();
+			for(TempTableData cell:tempdatalists) {
+				if(cell.getRowNumber() == updateinfo.row && cell.getColumnNumber() == updateinfo.column) {
+					cell.setContents(updateinfo.contents);
+					tempdataRepository.save(cell);
+				}
+			}
+			
+		}
+		
 	}
-
 
 	public void updateTableName(long tableid, String contents) {//테이블 이름 수정하기
 		Optional<TableDoc> temp = docRepository.findById(tableid);
@@ -195,12 +247,24 @@ public class ExcelService {
 
 
 	public void updateColumnName(long tableid, int columnnumber, String contents) {//열 이름 수정하기
-		List<TempTableData> dataoftable = tempdataRepository.findByTableInfoId(tableid).get();
-		for(TempTableData cell :dataoftable) {
-			if(cell.getColumnNumber() == columnnumber) {
-				cell.setColumnName(contents);
-				tempdataRepository.save(cell);
+		if(isFinalTable(tableid)==true) {
+			List<TableData> dataoftable = dataRepository.findByTableInfoId(tableid).get();
+			for(TableData cell :dataoftable) {
+				if(cell.getColumnNumber() == columnnumber) {
+					cell.setColumnName(contents);
+					dataRepository.save(cell);
+				}
 			}
+		}
+		else {
+			List<TempTableData> dataoftable = tempdataRepository.findByTableInfoId(tableid).get();
+			for(TempTableData cell :dataoftable) {
+				if(cell.getColumnNumber() == columnnumber) {
+					cell.setColumnName(contents);
+					tempdataRepository.save(cell);
+				}
+			}
+			
 		}
 	}
 	
@@ -222,24 +286,47 @@ public class ExcelService {
 	}
 
 	public String createNewColumn(long tableid, int colindex, String contents) {
-		TableDoc tableinfo = docRepository.findById(tableid).get();
-		List<TempTableData> tempList = tempdataRepository.findByTableInfoId(tableid).get();
-		int Max=-1;
-		for(TempTableData cell: tempList) {
-			if(cell.getRowNumber()>Max) Max=cell.getRowNumber();
+		if(isFinalTable(tableid)==true) {
+			TableDoc tableinfo = docRepository.findById(tableid).get();
+			List<TableData> tempList = dataRepository.findByTableInfoId(tableid).get();
+			int Max=-1;
+			for(TableData cell: tempList) {
+				if(cell.getRowNumber()>Max) Max=cell.getRowNumber();
+			}
+			
+			List<TableData> tableDataList = new ArrayList<>();//이 리스트에 저장
+			for(int i=2;i<=Max;i++) {
+				TableData tableData = new TableData();
+				tableData.setColumnName(contents);
+				 tableData.setColumnNumber(colindex);
+				 tableData.setRowNumber(i);
+				 tableData.setTableInfo(tableinfo);
+				 tableData.setContents("");
+				 tableDataList.add(tableData);
+			}
+			dataRepository.saveAll(tableDataList);
 		}
-		
-		List<TempTableData> tableDataList = new ArrayList<>();//이 리스트에 저장
-		for(int i=2;i<=Max;i++) {
-			TempTableData tableData = new TempTableData();
-			tableData.setColumnName(contents);
-			 tableData.setColumnNumber(colindex);
-			 tableData.setRowNumber(i);
-			 tableData.setTableInfo(tableinfo);
-			 tableData.setContents("");
-			 tableDataList.add(tableData);
+		else {
+			TableDoc tableinfo = docRepository.findById(tableid).get();
+			List<TempTableData> tempList = tempdataRepository.findByTableInfoId(tableid).get();
+			int Max=-1;
+			for(TempTableData cell: tempList) {
+				if(cell.getRowNumber()>Max) Max=cell.getRowNumber();
+			}
+			
+			List<TempTableData> tableDataList = new ArrayList<>();//이 리스트에 저장
+			for(int i=2;i<=Max;i++) {
+				TempTableData tableData = new TempTableData();
+				tableData.setColumnName(contents);
+				 tableData.setColumnNumber(colindex);
+				 tableData.setRowNumber(i);
+				 tableData.setTableInfo(tableinfo);
+				 tableData.setContents("");
+				 tableDataList.add(tableData);
+			}
+			tempdataRepository.saveAll(tableDataList);
+			
 		}
-		tempdataRepository.saveAll(tableDataList);
 		
 		return "new column created";
 		
@@ -247,68 +334,60 @@ public class ExcelService {
 	
 	
 	public String createNewRow(long tableid, int rowindex) {//새로운 빈 행 만들기
-		TableDoc tableinfo = docRepository.findById(tableid).get();
-		List<TempTableData> tempList = tempdataRepository.findByTableInfoId(tableid).get();
-		int Max=-1;
-		Map<Integer, String> columnMap = new HashMap<>();
-		for(TempTableData cell: tempList) {
-			if(cell.getColumnNumber()>Max) Max=cell.getColumnNumber();
-			columnMap.put(cell.getColumnNumber(), cell.getColumnName());
+		if(isFinalTable(tableid)==true) {
+			TableDoc tableinfo = docRepository.findById(tableid).get();
+			List<TableData> dataList = dataRepository.findByTableInfoId(tableid).get();
+			int Max=-1;
+			Map<Integer, String> columnMap = new HashMap<>();
+			for(TableData cell: dataList) {
+				if(cell.getColumnNumber()>Max) Max=cell.getColumnNumber();
+				columnMap.put(cell.getColumnNumber(), cell.getColumnName());
+			}
+			
+			
+			List<TableData> tableDataList = new ArrayList<>();
+			for(int i=0;i<=Max;i++) {
+				TableData tableData = new TableData();
+				tableData.setColumnName(columnMap.get(i));
+				tableData.setColumnNumber(i);
+				tableData.setRowNumber(rowindex);
+				tableData.setTableInfo(tableinfo);
+				tableData.setContents("");
+				tableDataList.add(tableData);
+			}
+			dataRepository.saveAll(tableDataList);
 		}
-		
-		
-		List<TempTableData> tableDataList = new ArrayList<>();
-		for(int i=0;i<=Max;i++) {
-			TempTableData tableData = new TempTableData();
-			tableData.setColumnName(columnMap.get(i));
-			tableData.setColumnNumber(i);
-			tableData.setRowNumber(rowindex);
-			tableData.setTableInfo(tableinfo);
-			tableData.setContents("");
-			tableDataList.add(tableData);
+		else {
+			TableDoc tableinfo = docRepository.findById(tableid).get();
+			List<TempTableData> tempList = tempdataRepository.findByTableInfoId(tableid).get();
+			int Max=-1;
+			Map<Integer, String> columnMap = new HashMap<>();
+			for(TempTableData cell: tempList) {
+				if(cell.getColumnNumber()>Max) Max=cell.getColumnNumber();
+				columnMap.put(cell.getColumnNumber(), cell.getColumnName());
+			}
+			
+			
+			List<TempTableData> tableDataList = new ArrayList<>();
+			for(int i=0;i<=Max;i++) {
+				TempTableData tableData = new TempTableData();
+				tableData.setColumnName(columnMap.get(i));
+				tableData.setColumnNumber(i);
+				tableData.setRowNumber(rowindex);
+				tableData.setTableInfo(tableinfo);
+				tableData.setContents("");
+				tableDataList.add(tableData);
+			}
+			tempdataRepository.saveAll(tableDataList);
+			
 		}
-		tempdataRepository.saveAll(tableDataList);
 		
 		
 		
 		return "new row created";
 	}
     
-//data db에 저장만 하는거 finaldb part
-	
-	public void saveFinalDb() {
-		 List<TempTableData> tempDataList = tempdataRepository.findAll();		
-		 List<TableData> tableDataList = new ArrayList<>();
-		 for(TempTableData cell : tempDataList) {
-			 TableData tableData = new TableData();
-			 tableData.setColumnName(cell.getColumnName());
-			 tableData.setColumnNumber(cell.getColumnNumber());
-			 tableData.setRowNumber(cell.getRowNumber());
-			 tableData.setTableInfo(cell.getTableInfo());
-			 tableData.setContents(cell.getContents());
-			 tableDataList.add(tableData);
-		 }
-		 dataRepository.saveAll(tableDataList);
-	}
-
-
-	public boolean isFinalTableEmpty() {//파이널 데이터가 비었는지 확인
-		 return dataRepository.countAll() == 0;
-		
-	}
-
-
-	public void updateFinalCell(long cellid, String contents) {
-		Optional<TableData> temp = dataRepository.findById(cellid);
-		TableData finalCell = temp.get();
-		finalCell.setContents(contents);
-		dataRepository.save(finalCell);
-		
-		
-	}
-
-
-
+//data 
 
 	public void saveToFinalTable(long tableid) {
 		List<TempTableData> tempDataList = tempdataRepository.findByTableInfoId(tableid).get();
@@ -328,10 +407,7 @@ public class ExcelService {
 			tempdataRepository.deleteById(cell.getId());
 		}
 		
-		
-		
-				
-		TableDoc tableobject = docRepository.findById(tableid).get();
+		TableDoc tableobject = docRepository.findById(tableid).get();//true변경
 		tableobject.setFinalData(true);
 		docRepository.save(tableobject);
 		 
