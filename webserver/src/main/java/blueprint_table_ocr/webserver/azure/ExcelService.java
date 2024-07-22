@@ -48,6 +48,7 @@ public class ExcelService {
 				Sheet sheet = workbook.getSheetAt(i);//첫번째 시트 읽기
 				List<TempTableData> temptableDataList = new ArrayList<>();//리스트에 하나의 테이블의 데이터 다 저장
 				TableDoc newTableDoc  = new TableDoc();
+				newTableDoc.setFinalData(false);
 				for (Row row : sheet) {
 					 
 		            if (row.getRowNum() == 0) { 
@@ -150,11 +151,17 @@ public class ExcelService {
 	}
 
 
-	public List<TempTableData> findTempDataById(long tableId) {//특정 파일,테이블의 데이터들 보여주기
-		List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(tableId).get();
-		
+	public List<? extends Data> findTempDataById(long tableId) {//특정 파일,테이블의 데이터들 보여주기
+		List<? extends Data> tempdatalists = tempdataRepository.findByTableInfoId(tableId).get();
 		return tempdatalists;
 	}
+
+	public List<? extends Data> findDataById(long tableId) {
+		List<? extends Data> datalists = dataRepository.findByTableInfoId(tableId).get();
+		return datalists;
+	}
+
+
 
 ////update
 	public void updateTempCell(UpdateRequest updateinfo) {
@@ -285,6 +292,41 @@ public class ExcelService {
 		
 	}
 
+
+
+
+	public void saveToFinalTable(long tableid) {
+		List<TempTableData> tempDataList = tempdataRepository.findByTableInfoId(tableid).get();
+		List<TableData> tableDataList = new ArrayList<>();
+		for(TempTableData cell : tempDataList) {//final로 옮기기
+			TableData tableData = new TableData();
+			tableData.setColumnName(cell.getColumnName());
+			tableData.setColumnNumber(cell.getColumnNumber());
+			tableData.setRowNumber(cell.getRowNumber());
+			tableData.setTableInfo(cell.getTableInfo());
+			tableData.setContents(cell.getContents());
+			tableDataList.add(tableData);
+		}
+		dataRepository.saveAll(tableDataList);
+		
+		for(TempTableData cell : tempDataList) {//temp에서 삭제
+			tempdataRepository.deleteById(cell.getId());
+		}
+		
+		
+		
+				
+		TableDoc tableobject = docRepository.findById(tableid).get();
+		tableobject.setFinalData(true);
+		docRepository.save(tableobject);
+		 
+		
+	}
+	
+	public boolean isFinalTable(long tableId) {
+		if(docRepository.findById(tableId).get().isFinalData()==true) return true;
+		return false;
+	}
 
 
 
