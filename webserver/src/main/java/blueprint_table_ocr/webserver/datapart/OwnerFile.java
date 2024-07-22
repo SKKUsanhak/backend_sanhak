@@ -26,12 +26,14 @@ public class OwnerFile {
 	@JsonIgnore
 	private List<TableDoc> tableDoc;
 	
-	private LocalDateTime createTime= LocalDateTime.now();
+	private LocalDateTime createTime;
+	private LocalDateTime updateTime;
 	
 	@PrePersist
-	    protected void onCreate() {
-	        this.setCreateTime(LocalDateTime.now());
-	    }
+	protected void onCreate() {
+		this.setCreateTime(LocalDateTime.now());
+		this.setUpdateTime(LocalDateTime.now());
+	}
 
 	public Long getId() {
 		return Id;
@@ -63,6 +65,14 @@ public class OwnerFile {
 
 	public void setCreateTime(LocalDateTime createTime) {
 		this.createTime = createTime;
+	}
+
+	public LocalDateTime getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(LocalDateTime updateTime) {
+		this.updateTime = updateTime;
 	}
 
 }
