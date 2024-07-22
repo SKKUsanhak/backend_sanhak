@@ -133,9 +133,16 @@ public class AzureController {
 	   public String createcolumn(@RequestParam("tableid") long tableid,@RequestParam("colindex") int colindex,@RequestBody Map<String,String> Content) {
 		   String contents = Content.get("contents");
 		   return excelService.createNewColumn(tableid,colindex,contents);
-		   
-		   
 	   }
+	   
+	   @PostMapping("/create-new-row")//열 새로 만들기
+	   public String createrow(@RequestParam("tableid") long tableid,@RequestParam("rowindex") int rowindex) {
+		   return excelService.createNewRow(tableid,rowindex);
+	   }
+	   
+	   
+	   
+	   /////////////////////////////////////////////////////////////////////////////////////////final data part
 	   
 	   @GetMapping("/save-final-data")//그냥 지금 있는거 그대로 final로 옮기기
 	   public void saveFinal() {
