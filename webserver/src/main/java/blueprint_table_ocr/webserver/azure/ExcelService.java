@@ -203,7 +203,6 @@ public class ExcelService {
 		newTable.setFileInfo(fileinfo);
 		newTable.setTableTitle(tablename);
 		docRepository.save(newTable);
-		
 	}
 
 	public String createNewColumn(long tableid, int colindex, String contents) {
