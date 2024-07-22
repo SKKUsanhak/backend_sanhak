@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class TempTableData {
+public class TempTableData implements Data {
 	@Id
 	@GeneratedValue
 	private Long id;

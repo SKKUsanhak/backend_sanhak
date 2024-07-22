@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TempDataRepository extends JpaRepository<TempTableData,Long> {
+public interface TempDataRepository extends JpaRepository<TempTableData,Long>, CommonDataRepository<TempTableData>  {
 
 	Optional<List<TempTableData>> findByTableInfoId(long tableId);
 

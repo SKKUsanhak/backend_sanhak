@@ -67,7 +67,7 @@ public class AzureController {
 		 
 	   //delete
 	   @DeleteMapping("/delete-file")//파일 삭제하기
-		public void DeleteFromDatabase (@RequestParam long id) {
+		public void DeleteFromDatabase (@RequestParam("id") long id) {
 			excelService.deleteFile(id);
 		}
 	   
@@ -90,15 +90,22 @@ public class AzureController {
 		}
 		
 	   @GetMapping("/show-table")//해당 아이디를 가진 파일의 테이블 리스트 보여주기
-		public List<TableDoc> listAlltables(@RequestParam long id) {
+		public List<TableDoc> listAlltables(@RequestParam("id") long id) {
 			List<TableDoc> tablelists = excelService.findTableById(id);
 			return tablelists;
 	   }
 	   
-	   @GetMapping("/show-temp-data")//해당 아이디를 가진 테이블의 템프 데이터  보여주기
-		public List<TempTableData> lilltables(@RequestParam long tableId) {
-			List<TempTableData> tempdatalists = excelService.findTempDataById(tableId);
-			return  tempdatalists;
+	   @GetMapping("/show-data")//해당 아이디를 가진 테이블의 템프 데이터  보여주기
+		public List<? extends Data> showtables(@RequestParam("tableid") long tableId) {
+		   	if(excelService.isFinalTable(tableId)==true) {
+		   		List<? extends Data> datalists = excelService.findDataById(tableId);
+		   		return  datalists;	
+		   	}
+		   	else {
+		   		List<? extends Data> tempdatalists = excelService.findTempDataById(tableId);
+				return  tempdatalists;	
+		   	}
+			 
 	   }
 	   
 	   //update
@@ -151,6 +158,13 @@ public class AzureController {
 	   public void saveFinal() {
 		   excelService.saveFinalDb();
 	   }
+	   
+	   @GetMapping("/save-final-table")//table id를 주면 해당 테이블만 final data로 옮기고 temp에서는 삭제
+	   public void saveFinalTable(@RequestParam("tableid") long tableid) {
+		   excelService.saveToFinalTable(tableid);
+	   }
+	   
+	   
 	   
 	   @PatchMapping("/update-final-data")//final data 업데이트 하기
 	   public String updateFinal(@RequestParam long cellid ,@RequestBody Map<String,String> Content) {

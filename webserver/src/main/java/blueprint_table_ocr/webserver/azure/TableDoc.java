@@ -35,7 +35,8 @@ public class TableDoc {
 	@ManyToOne
 	@JsonBackReference
 	private OwnerFile fileInfo;
-	
+
+	private boolean finalData;
 	
 
 	public Long getId() {
@@ -68,6 +69,14 @@ public class TableDoc {
 
 	public void setFileInfo(OwnerFile fileInfo) {
 		this.fileInfo = fileInfo;
+	}
+
+	public boolean isFinalData() {
+		return finalData;
+	}
+
+	public void setFinalData(boolean finalData) {
+		this.finalData = finalData;
 	}
 
 
