@@ -1,4 +1,4 @@
-package blueprint_table_ocr.webserver.azure;
+package blueprint_table_ocr.webserver.datapart;
 
 import java.time.LocalDateTime;
 import java.util.List;

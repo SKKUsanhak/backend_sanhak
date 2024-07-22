@@ -1,4 +1,4 @@
-package blueprint_table_ocr.webserver.azure;
+package blueprint_table_ocr.webserver.azure.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +16,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import blueprint_table_ocr.webserver.azure.AzureController.UpdateRequest;
+import blueprint_table_ocr.webserver.azure.Repository.DataRepository;
+import blueprint_table_ocr.webserver.azure.Repository.DocRepository;
+import blueprint_table_ocr.webserver.azure.Repository.FileRepository;
+import blueprint_table_ocr.webserver.azure.Repository.TempDataRepository;
+import blueprint_table_ocr.webserver.datapart.Data;
+import blueprint_table_ocr.webserver.datapart.OwnerFile;
+import blueprint_table_ocr.webserver.datapart.TableData;
+import blueprint_table_ocr.webserver.datapart.TableDoc;
+import blueprint_table_ocr.webserver.datapart.TempTableData;
 
 @Service
 public class ExcelService {
@@ -203,7 +212,13 @@ public class ExcelService {
 		newTable.setFileInfo(fileinfo);
 		newTable.setTableTitle(tablename);
 		docRepository.save(newTable);
-		
+		TempTableData basicCell = new TempTableData();
+		basicCell.setColumnName("");
+		basicCell.setColumnNumber(0);
+		basicCell.setContents("");
+		basicCell.setRowNumber(2);
+		basicCell.setTableInfo(newTable);
+		tempdataRepository.save(basicCell);
 	}
 
 	public String createNewColumn(long tableid, int colindex, String contents) {

@@ -19,6 +19,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import blueprint_table_ocr.webserver.azure.service.AzureService;
+import blueprint_table_ocr.webserver.azure.service.ExcelService;
+import blueprint_table_ocr.webserver.datapart.Data;
+import blueprint_table_ocr.webserver.datapart.OwnerFile;
+import blueprint_table_ocr.webserver.datapart.TableDoc;
+
 @RestController
 public class AzureController {
 
