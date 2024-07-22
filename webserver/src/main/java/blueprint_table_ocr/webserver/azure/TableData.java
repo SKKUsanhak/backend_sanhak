@@ -23,8 +23,6 @@ public class TableData {
 	@JsonBackReference
 	private TableDoc tableInfo;
 	
-	//private boolean firstColumn;
-	private boolean FinalData = true;
 
 	
 	public Long getId() {
@@ -85,14 +83,7 @@ public class TableData {
 		this.columnNumber = columnNumber;
 	}
 
-	public boolean isFinalData() {
-		return FinalData;
-	}
-
-	public void setFinalData(boolean finalData) {
-		FinalData = finalData;
-	}
-
+	
 	
 	
 	

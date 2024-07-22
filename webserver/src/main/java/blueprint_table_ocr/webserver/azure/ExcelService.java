@@ -1,7 +1,6 @@
 package blueprint_table_ocr.webserver.azure;
 
 import java.io.IOException;
-import java.util.NoSuchElementException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -239,13 +238,24 @@ public class ExcelService {
 
 	public String createNewColumn(long tableid, int colindex, String contents) {
 		TableDoc tableinfo = docRepository.findById(tableid).get();
-		TempTableData newTempData = new TempTableData();
-		newTempData.setTableInfo(tableinfo);
-		newTempData.setRowNumber(-1);
-		newTempData.setContents(null);
-		newTempData.setColumnNumber(colindex);
-		newTempData.setColumnName(contents);
-		tempdataRepository.save(newTempData);
+		List<TempTableData> tempList = tempdataRepository.findByTableInfoId(tableid).get();
+		int Max=-1;
+		for(TempTableData cell: tempList) {
+			if(cell.getRowNumber()>Max) Max=cell.getRowNumber();
+		}
+		
+		List<TempTableData> tableDataList = new ArrayList<>();//이 리스트에 저장
+		for(int i=2;i<=Max;i++) {
+			TempTableData tableData = new TempTableData();
+			tableData.setColumnName(contents);
+			 tableData.setColumnNumber(colindex);
+			 tableData.setRowNumber(i);
+			 tableData.setTableInfo(tableinfo);
+			 tableData.setContents("");
+			 tableDataList.add(tableData);
+		}
+		tempdataRepository.saveAll(tableDataList);
+		
 		return "new column created";
 		
 	}

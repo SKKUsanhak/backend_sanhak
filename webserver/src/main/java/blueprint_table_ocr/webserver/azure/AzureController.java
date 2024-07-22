@@ -130,7 +130,7 @@ public class AzureController {
 	   }
 	   
 	   @PostMapping("/create-new-column")//열 새로 만들기
-	   public String createcolumn(@RequestParam long tableid,@RequestParam int colindex,@RequestBody Map<String,String> Content) {
+	   public String createcolumn(@RequestParam("tableid") long tableid,@RequestParam("colindex") int colindex,@RequestBody Map<String,String> Content) {
 		   String contents = Content.get("contents");
 		   return excelService.createNewColumn(tableid,colindex,contents);
 		   
@@ -149,16 +149,8 @@ public class AzureController {
 		   }
 		   String contents = Content.get("contents");
 		   excelService.updateFinalCell(cellid, contents);
+		
 		   return "update complete";
+
 	   }
 }
-
-
-
-/*
-		@PostMapping("/find-excel-db")//기호중에 찾기
-		@ResponseBody	public List<TableData> FindFromDatabase (@RequestParam String kw) {
-			List<TableData> results = excelService.findFullRow(kw);
-			 return results; // 결과를 JSON 형식으로 
-		}
-		*/
