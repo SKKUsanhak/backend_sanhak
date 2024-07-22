@@ -23,8 +23,6 @@ public class TempTableData {
 	@JsonBackReference
 	private TableDoc tableInfo;
 	
-	//private boolean firstColumn;
-	private boolean FinalData = false;
 
 	
 	public Long getId() {
@@ -85,13 +83,6 @@ public class TempTableData {
 		this.columnNumber = columnNumber;
 	}
 
-	public boolean isFinalData() {
-		return FinalData;
-	}
-
-	public void setFinalData(boolean finalData) {
-		FinalData = finalData;
-	}
 
 	
 	
