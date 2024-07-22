@@ -1,4 +1,4 @@
-package blueprint_table_ocr.webserver.azure;
+package blueprint_table_ocr.webserver.azure.service;
 
 import java.io.IOException;
 import java.nio.file.Path;

@@ -19,6 +19,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import blueprint_table_ocr.webserver.azure.service.AzureService;
+import blueprint_table_ocr.webserver.azure.service.ExcelService;
+import blueprint_table_ocr.webserver.datapart.Data;
+import blueprint_table_ocr.webserver.datapart.OwnerFile;
+import blueprint_table_ocr.webserver.datapart.TableDoc;
+
 @RestController
 public class AzureController {
 
@@ -121,20 +127,20 @@ public class AzureController {
 	   }
 	   
 	   @PatchMapping("/update-table-name")//원하는 테이블 이름 업데이트
-	   public void updateTableName (@RequestParam long tableid ,@RequestBody Map<String,String> Content) { 
+	   public void updateTableName (@RequestParam("tableid") long tableid ,@RequestBody Map<String,String> Content) { 
 		   String contents = Content.get("contents");
 		   excelService.updateTableName(tableid, contents);
 	   }
 	   
 	   @PatchMapping("/update-column-name")//열의 이름 업데이트
-	   public void updateColumnName (@RequestParam long tableid, @RequestParam int columnnumber,@RequestBody Map<String,String> Content) {
+	   public void updateColumnName (@RequestParam("tableid") long tableid, @RequestParam int columnnumber,@RequestBody Map<String,String> Content) {
 		   String contents = Content.get("contents");
 		   excelService.updateColumnName(tableid, columnnumber,contents);
 	   }
 	   
 	   ////create
 	   @PostMapping("/create-new-table")//테이블 새로 만들기
-	   public void createTable (@RequestParam long fileid, @RequestBody Map<String,String> Content) {
+	   public void createTable (@RequestParam("fileid") long fileid, @RequestBody Map<String,String> Content) {
 		   String tablename = Content.get("contents");
 		   excelService.createNewTable(fileid, tablename);
 	   }
@@ -154,11 +160,6 @@ public class AzureController {
 	   
 	   /////////////////////////////////////////////////////////////////////////////////////////final data part
 	   
-	   @GetMapping("/save-final-data")//그냥 지금 있는거 그대로 final로 옮기기
-	   public void saveFinal() {
-		   excelService.saveFinalDb();
-	   }
-	   
 	   @GetMapping("/save-final-table")//table id를 주면 해당 테이블만 final data로 옮기고 temp에서는 삭제
 	   public void saveFinalTable(@RequestParam("tableid") long tableid) {
 		   excelService.saveToFinalTable(tableid);
@@ -167,7 +168,7 @@ public class AzureController {
 	   
 	   
 	   @PatchMapping("/update-final-data")//final data 업데이트 하기
-	   public String updateFinal(@RequestParam long cellid ,@RequestBody Map<String,String> Content) {
+	   public String updateFinal(@RequestParam("cellid") long cellid ,@RequestBody Map<String,String> Content) {
 		   if(excelService.isFinalTableEmpty()==true) {
 			   excelService.saveFinalDb();
 		   }
