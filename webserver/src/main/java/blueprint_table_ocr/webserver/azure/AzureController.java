@@ -127,20 +127,20 @@ public class AzureController {
 	   }
 	   
 	   @PatchMapping("/update-table-name")//원하는 테이블 이름 업데이트
-	   public void updateTableName (@RequestParam long tableid ,@RequestBody Map<String,String> Content) { 
+	   public void updateTableName (@RequestParam("tableid") long tableid ,@RequestBody Map<String,String> Content) { 
 		   String contents = Content.get("contents");
 		   excelService.updateTableName(tableid, contents);
 	   }
 	   
 	   @PatchMapping("/update-column-name")//열의 이름 업데이트
-	   public void updateColumnName (@RequestParam long tableid, @RequestParam int columnnumber,@RequestBody Map<String,String> Content) {
+	   public void updateColumnName (@RequestParam("tableid") long tableid, @RequestParam int columnnumber,@RequestBody Map<String,String> Content) {
 		   String contents = Content.get("contents");
 		   excelService.updateColumnName(tableid, columnnumber,contents);
 	   }
 	   
 	   ////create
 	   @PostMapping("/create-new-table")//테이블 새로 만들기
-	   public void createTable (@RequestParam long fileid, @RequestBody Map<String,String> Content) {
+	   public void createTable (@RequestParam("fileid") long fileid, @RequestBody Map<String,String> Content) {
 		   String tablename = Content.get("contents");
 		   excelService.createNewTable(fileid, tablename);
 	   }
@@ -173,7 +173,7 @@ public class AzureController {
 	   
 	   
 	   @PatchMapping("/update-final-data")//final data 업데이트 하기
-	   public String updateFinal(@RequestParam long cellid ,@RequestBody Map<String,String> Content) {
+	   public String updateFinal(@RequestParam("cellid") long cellid ,@RequestBody Map<String,String> Content) {
 		   if(excelService.isFinalTableEmpty()==true) {
 			   excelService.saveFinalDb();
 		   }
