@@ -170,6 +170,7 @@ public class AzureController {
 	   
 	   /////////////////////////////////////////////////////////////////////////////////////////final data part
 	   
+
 	   
 	   @PostMapping("/save-final-table")//table id를 주면 해당 테이블만 final data로 옮기고 temp에서는 삭제
 	   public void saveFinalTable(@RequestParam("tableid") long tableid) {
