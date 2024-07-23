@@ -23,7 +23,7 @@ public class TableDoc {
 	private String tableTitle;
 	
 	@OneToMany(mappedBy="tableInfo",cascade = CascadeType.REMOVE)
-	@JsonManagedReference
+	@JsonManagedReference//순환 참조 방지
 	@JsonIgnore
 	private List<TableData> tableDatas;
 	
@@ -33,7 +33,7 @@ public class TableDoc {
 	private List<TempTableData> temptableDatas;
 	
 	@ManyToOne
-	@JsonBackReference
+	@JsonBackReference//순환 참조 방지
 	private OwnerFile fileInfo;
 
 	private boolean finalData;

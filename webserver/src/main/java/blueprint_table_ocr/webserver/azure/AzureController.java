@@ -126,6 +126,12 @@ public class AzureController {
 		   excelService.updateCell(updateinfo);
 	   }
 	   
+	   @PatchMapping("/update-file-name")//원하는 테이블 이름 업데이트
+	   public void updateFileName (@RequestParam("fileid") long fileid ,@RequestBody Map<String,String> Content) { 
+		   String contents = Content.get("contents");
+		   excelService.updateFileName(fileid, contents);
+	   }
+	   
 	   @PatchMapping("/update-table-name")//원하는 테이블 이름 업데이트
 	   public void updateTableName (@RequestParam("tableid") long tableid ,@RequestBody Map<String,String> Content) { 
 		   String contents = Content.get("contents");
@@ -165,7 +171,7 @@ public class AzureController {
 	   /////////////////////////////////////////////////////////////////////////////////////////final data part
 	   
 	   
-	   @GetMapping("/save-final-table")//table id를 주면 해당 테이블만 final data로 옮기고 temp에서는 삭제
+	   @PostMapping("/save-final-table")//table id를 주면 해당 테이블만 final data로 옮기고 temp에서는 삭제
 	   public void saveFinalTable(@RequestParam("tableid") long tableid) {
 		   excelService.saveToFinalTable(tableid);
 	   }

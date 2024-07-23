@@ -244,6 +244,13 @@ public class ExcelService {
 		}
 		
 	}
+	
+	public void updateFileName(long fileid, String contents) {
+		OwnerFile file = fileRepository.findById(fileid).get();
+		file.setFileName(contents);
+		fileRepository.save(file);
+		
+	}
 
 	public void updateTableName(long tableid, String contents) {//테이블 이름 수정하기
 		Optional<TableDoc> temp = docRepository.findById(tableid);

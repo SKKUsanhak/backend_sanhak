@@ -19,7 +19,7 @@ public class TempTableData implements Data {
 	private String columnName;
 	private String contents;
 	
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne
 	@JsonBackReference
 	private TableDoc tableInfo;
 	
