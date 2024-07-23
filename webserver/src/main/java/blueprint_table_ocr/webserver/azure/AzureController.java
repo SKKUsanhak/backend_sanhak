@@ -77,6 +77,11 @@ public class AzureController {
 			excelService.deleteFile(id);
 		}
 	   
+	   @DeleteMapping("/delete-table")//파일 삭제하기
+		public void DeletetableFromDatabase (@RequestParam("tableid") long tableid) {
+			excelService.deleteTable(tableid);
+		}
+	   
 	   @DeleteMapping("/delete-row")//행 삭제하고 아래있는거 땡기기
 	   public void DeleteRow(@RequestParam("tableid") long tableid,@RequestParam("rowindex") int rowindex) {
 		   excelService.deleteRow(tableid,rowindex);

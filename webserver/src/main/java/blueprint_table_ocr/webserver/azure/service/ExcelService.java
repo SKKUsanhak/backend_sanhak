@@ -107,6 +107,24 @@ public class ExcelService {
 		
 	}
 	
+
+	public void deleteTable(long tableid) {
+		if(isFinalTable(tableid)==true) {
+			List<TableData> datalist = dataRepository.findByTableInfoId(tableid).get();
+			for(TableData cell: datalist) {//참조관계 끊기
+				cell.setTableInfo(null);
+				dataRepository.save(cell);
+			}
+			docRepository.deleteById(tableid);	
+		}
+		else {
+			docRepository.deleteById(tableid);	
+		}
+		
+		
+	}
+
+	
 	public void deleteRow(long tableid, int rowindex) {
 		if(isFinalTable(tableid)==true) {
 			List<TableData> datalist = dataRepository.findByTableInfoId(tableid).get();

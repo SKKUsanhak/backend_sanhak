@@ -22,7 +22,7 @@ public class TableDoc {
 	
 	private String tableTitle;
 	
-	@OneToMany(mappedBy="tableInfo",cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy="tableInfo")
 	@JsonManagedReference//순환 참조 방지
 	@JsonIgnore
 	private List<TableData> tableDatas;
