@@ -16,7 +16,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import blueprint_table_ocr.webserver.azure.AzureController.UpdateRequest;
 import blueprint_table_ocr.webserver.azure.Repository.DataRepository;
 import blueprint_table_ocr.webserver.azure.Repository.DocRepository;
 import blueprint_table_ocr.webserver.azure.Repository.FileRepository;
@@ -239,22 +238,22 @@ public class ExcelService {
 		fileRepository.save(file);
 	}
 
-	public void updateCell(UpdateRequest updateinfo) {
-		if(isFinalTable(updateinfo.tableId)==true) {
-			List<TableData> datalists = dataRepository.findByTableInfoId(updateinfo.tableId).get();
+	public void updateCell(long tableId,int columnIndex,int rowIndex,String contents) {
+		if(isFinalTable(tableId)==true) {
+			List<TableData> datalists = dataRepository.findByTableInfoId(tableId).get();
 			for(TableData cell:datalists) {
-				if(cell.getRowNumber() == updateinfo.row && cell.getColumnNumber() == updateinfo.column) {
-					cell.setContents(updateinfo.contents);
+				if(cell.getRowNumber() == rowIndex && cell.getColumnNumber() == columnIndex) {
+					cell.setContents(contents);
 					dataRepository.save(cell);
 				}
 			}
 		}
 		
 		else {
-			List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(updateinfo.tableId).get();
+			List<TempTableData> tempdatalists = tempdataRepository.findByTableInfoId(tableId).get();
 			for(TempTableData cell:tempdatalists) {
-				if(cell.getRowNumber() == updateinfo.row && cell.getColumnNumber() == updateinfo.column) {
-					cell.setContents(updateinfo.contents);
+				if(cell.getRowNumber() == rowIndex && cell.getColumnNumber() == columnIndex) {
+					cell.setContents(contents);
 					tempdataRepository.save(cell);
 				}
 			}
