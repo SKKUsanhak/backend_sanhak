@@ -50,7 +50,7 @@ public class ExcelService {
 	public void saveTempDb(MultipartFile file, FileInformationDto fileInformation)  throws IOException{
 		try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
 			OwnerFile ownerFile = new OwnerFile(); 
-			ownerFile.setFileName(fileInformation.getFilename());
+			ownerFile.setFileName(fileInformation.getFileName());
 			ownerFile.setAddress(fileInformation.getAddress());
 			ownerFile.setBuildingName(fileInformation.getBuildingName());
 			ownerFile.setNote(fileInformation.getNote());

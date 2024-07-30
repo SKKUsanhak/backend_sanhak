@@ -12,12 +12,7 @@ public class FileInformationDto {
 	private String buildingName;
 	@Size(max = 300)
 	private String note;
-	public String getFilename() {
-		return fileName;
-	}
-	public void setFilename(String filename) {
-		this.fileName = filename;
-	}
+	
 	public String getAddress() {
 		return address;
 	}
@@ -35,6 +30,12 @@ public class FileInformationDto {
 	}
 	public void setNote(String note) {
 		this.note = note;
+	}
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 }

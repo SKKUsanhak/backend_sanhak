@@ -58,16 +58,16 @@ public class AzureController {
 	   
 	   
 	 
-	   @PostMapping("/files")//db에 excel파일을 저장,파일 정보와 함꼐 *POST/{{baseUrl}}/files
-	    public String SaveExcelDatabase(@RequestPart("file") MultipartFile file, @RequestBody @Valid FileInformationDto fileInformation) {
-	        try {
-	            excelService.saveTempDb(file,fileInformation);
-	            return "File uploaded and data saved to database successfully.";
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            return "Failed to upload file and save data to database.";
-	        }
-	    }
+	   @PostMapping("/files")
+	   public String saveExcelDatabase(@RequestPart("file") MultipartFile file, @RequestPart("fileInformation") @Valid FileInformationDto fileInformation) {
+	       try {
+	           excelService.saveTempDb(file, fileInformation);
+	           return "File uploaded and data saved to database successfully.";
+	       } catch (Exception e) {
+	           e.printStackTrace();
+	           return "Failed to upload file and save data to database.";
+	       }
+	   }
 		 
 	   //delete
 	   @DeleteMapping("/files/{fileId}")//파일 삭제하기 *DELETE/ {{baseUrl}}/files/:fileId
