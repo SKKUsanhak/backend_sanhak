@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 
 public class FileInformationDto {
 	@NotBlank
-	private String filename;
+	private String fileName;
 	@NotBlank
 	private String address;
 	@NotBlank
@@ -13,10 +13,10 @@ public class FileInformationDto {
 	@Size(max = 300)
 	private String note;
 	public String getFilename() {
-		return filename;
+		return fileName;
 	}
 	public void setFilename(String filename) {
-		this.filename = filename;
+		this.fileName = filename;
 	}
 	public String getAddress() {
 		return address;
