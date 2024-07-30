@@ -25,6 +25,7 @@ import blueprint_table_ocr.webserver.azure.service.ExcelService;
 import blueprint_table_ocr.webserver.datapart.Data;
 import blueprint_table_ocr.webserver.datapart.OwnerFile;
 import blueprint_table_ocr.webserver.datapart.TableDoc;
+import jakarta.validation.Valid;
 
 @RestController
 public class AzureController {
@@ -37,7 +38,7 @@ public class AzureController {
 	      this.excelService = excelservice;
 	   }
 	   
-	   @PostMapping("/upload") // 사용자가 POST한 파일 다운받기 -> Talend API 사용해서 정상 작동 확인함. -> table을 리액트로 리턴
+	   @PostMapping("/upload") // 사용자가 POST한 파일 다운받기 -> Talend API 사용해서 정상 작동 확인함. -> table을 리액트로 리턴//이거는 최초 데이터 분석
 	   public ResponseEntity<byte[]> UploadFile(@RequestParam("file") MultipartFile file) throws IOException {
 		   XSSFWorkbook workbook = service.analyzeTable(file);
 		   
@@ -57,10 +58,10 @@ public class AzureController {
 	   
 	   
 	 
-	   @PostMapping("/files")//db에 excel파일을 저장 *POST/{{baseUrl}}/files
-	    public String SaveExcelDatabase(@RequestPart("file") MultipartFile file, @RequestParam("fileName") String fileName) {
+	   @PostMapping("/files")//db에 excel파일을 저장,파일 정보와 함꼐 *POST/{{baseUrl}}/files
+	    public String SaveExcelDatabase(@RequestPart("file") MultipartFile file, @RequestBody @Valid FileInformationDto fileInformation) {
 	        try {
-	            excelService.saveTempDb(file,fileName);
+	            excelService.saveTempDb(file,fileInformation);
 	            return "File uploaded and data saved to database successfully.";
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -124,21 +125,18 @@ public class AzureController {
 	   }
 	   
 	   @PatchMapping("/files/{fileId}")//원하는 파일 이름 업데이트 *PATCH/{{baseUrl}}/files/:fileId
-	   public void updateFileName (@PathVariable long fileId ,@RequestBody Map<String,String> Content) { 
-		   String contents = Content.get("contents");
-		   excelService.updateFileName(fileId, contents);
+	   public void updateFileName (@PathVariable long fileId ,@RequestBody @Valid NameDto Content) { 
+		   excelService.updateFileName(fileId, Content.getName());
 	   }
 	   
 	   @PatchMapping("/files/{fileId}/tables/{tableId}")//원하는 테이블 이름 업데이트 *PATCH/ {{baseUrl}}/files/:fileId/tables/:tableId
-	   public void updateTableName (@PathVariable long fileId,@PathVariable long tableId ,@RequestBody Map<String,String> Content) { 
-		   String contents = Content.get("contents");
-		   excelService.updateTableName(tableId, contents);
+	   public void updateTableName (@PathVariable long fileId,@PathVariable long tableId ,@RequestBody @Valid NameDto Content) { 
+		   excelService.updateTableName(tableId, Content.getName());
 	   }
 	   
 	   @PatchMapping("/files/{fileId}/tables/{tableId}/columns/{columnIndex}")//열의 이름 업데이트 *PATCH/ {{baseUrl}}/files/:fileId/tables/:tableId/columns/:columnIndex
-	   public void updateColumnName (@PathVariable long fileId,@PathVariable long tableId,@PathVariable int columnIndex,@RequestBody Map<String,String> Content) {
-		   String contents = Content.get("contents");
-		   excelService.updateColumnName(tableId, columnIndex,contents);
+	   public void updateColumnName (@PathVariable long fileId,@PathVariable long tableId,@PathVariable int columnIndex,@RequestBody @Valid NameDto Content) {
+		   excelService.updateColumnName(tableId, columnIndex,Content.getName());
 	   }
 	   @PatchMapping("/files/{fileId}/updateDate")//*PATCH/ {{baseUrl}}/files/:fileId/updateDate
 	   public void updateDate(@PathVariable long fileId){
@@ -147,15 +145,13 @@ public class AzureController {
 	   
 	   ////create
 	   @PostMapping("/files/{fileId}/tables")//테이블 새로 만들기 *POST/{{baseUrl}}/files/:fileId/tables
-	   public void createTable (@PathVariable long fileId, @RequestBody Map<String,String> Content) {
-		   String tablename = Content.get("contents");
-		   excelService.createNewTable(fileId, tablename);
+	   public void createTable (@PathVariable long fileId, @RequestBody @Valid NameDto Content) {
+		   excelService.createNewTable(fileId, Content.getName());
 	   }
 	   
 	   @PostMapping("/files/{fileId}/tables/{tableId}/columns/{columnIndex}")//열 새로 만들기 *POST/{{baseUrl}}/files/:fileId/tables/:tableId/columns/:columnIndex
-	   public String createcolumn(@PathVariable long fileId,@PathVariable long tableId,@PathVariable int columnIndex,@RequestBody Map<String,String> Content) {
-		   String contents = Content.get("contents");
-		   return excelService.createNewColumn(tableId,columnIndex,contents);
+	   public String createcolumn(@PathVariable long fileId,@PathVariable long tableId,@PathVariable int columnIndex,@RequestBody @Valid NameDto Content) {
+		   return excelService.createNewColumn(tableId,columnIndex,Content.getName());
 	   }
 	   
 	   @PostMapping("/files/{fileId}/tables/{tableId}/rows/{rowIndex}")//행 새로 만들기 *POST/ {{baseUrl}}/files/:fileId/tables/:tableId/rows/:rowIndex
