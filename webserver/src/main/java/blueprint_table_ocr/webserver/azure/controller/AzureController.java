@@ -58,24 +58,9 @@ public class AzureController {
 	   }
 	   
 	   
-	 
-	   @PostMapping("/files")
-	   public String saveExcelDatabase(@RequestPart("file") MultipartFile file, @RequestParam String fileName) {
-	       try {
-	           excelService.saveTempDb(file, fileName);
-	           return "File uploaded and data saved to database successfully.";
-	       } catch (Exception e) {
-	           e.printStackTrace();
-	           return "Failed to upload file and save data to database.";
-	       }
-	   }
+	
 		 
 	   //delete
-	   @DeleteMapping("/files/{fileId}")//파일 삭제하기 *DELETE/ {{baseUrl}}/files/:fileId
-		public void DeleteFromDatabase (@PathVariable long fileId) {
-			excelService.deleteFile(fileId);
-		}
-	   
 	   @DeleteMapping("/files/{fileId}/tables/{tableId}")//테이블 삭제하기 *DELETE/ {{baseUrl}}/files/:fileId/tables/:tableId
 		public void DeletetableFromDatabase (@PathVariable long fileId, @PathVariable long tableId) {
 			excelService.deleteTable(tableId);
@@ -93,12 +78,6 @@ public class AzureController {
 	   
 	   
 	   //read
-		@GetMapping("buildings/{buildingId}/files")//파일 리스트 보여주기 *GET/ {{baseUrl}}/files
-		public List<OwnerFile> listAllfiles() {
-			List<OwnerFile> filelists = excelService.findAllFile();
-			return filelists;
-		}
-		
 	   @GetMapping("buildings/{buildingId}/files/{fileId}/tables")//해당 아이디를 가진 파일의 테이블 리스트 보여주기 *GET/ {{baseUrl}}/files/:fileId/tables
 		public List<TableDoc> listAlltables(@PathVariable long fileId) {
 			List<TableDoc> tablelists = excelService.findTableById(fileId);
@@ -125,10 +104,6 @@ public class AzureController {
 		   excelService.updateCell(tableId,columnIndex,rowIndex,contents);
 	   }
 	   
-	   @PatchMapping("/files/{fileId}")//원하는 파일 이름 업데이트 *PATCH/{{baseUrl}}/files/:fileId
-	   public void updateFileName (@PathVariable long fileId ,@RequestBody @Valid NameDto Content) { 
-		   excelService.updateFileName(fileId, Content.getName());
-	   }
 	   
 	   @PatchMapping("/files/{fileId}/tables/{tableId}")//원하는 테이블 이름 업데이트 *PATCH/ {{baseUrl}}/files/:fileId/tables/:tableId
 	   public void updateTableName (@PathVariable long fileId,@PathVariable long tableId ,@RequestBody @Valid NameDto Content) { 

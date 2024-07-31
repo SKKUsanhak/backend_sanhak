@@ -22,14 +22,14 @@ public class OwnerFile {
 	private Long Id;
 	
 	private String fileName;
+	private String Note;
+	private LocalDateTime createTime;
+	private LocalDateTime updateTime;
 	
 	@OneToMany(mappedBy =  "fileInfo",cascade = CascadeType.REMOVE)
 	@JsonManagedReference
 	@JsonIgnore
 	private List<TableDoc> tableDoc;
-	
-	private LocalDateTime createTime;
-	private LocalDateTime updateTime;
 	
 	@ManyToOne
 	@JsonBackReference//순환 참조 방지
@@ -84,6 +84,22 @@ public class OwnerFile {
 
 	public void setUpdateTime(LocalDateTime updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public Building getBuildingInfo() {
+		return buildingInfo;
+	}
+
+	public void setBuildingInfo(Building buildingInfo) {
+		this.buildingInfo = buildingInfo;
+	}
+
+	public String getNote() {
+		return Note;
+	}
+
+	public void setNote(String note) {
+		Note = note;
 	}
 
 

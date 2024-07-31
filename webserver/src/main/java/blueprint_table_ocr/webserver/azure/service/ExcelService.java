@@ -44,68 +44,8 @@ public class ExcelService {
 	
 	
 	
-	
-//////////////////////데이터베이스에 삽입하는 코드 for임시데이터
-	public void saveTempDb(MultipartFile file, String fileName) throws IOException{
-		try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
-			OwnerFile ownerFile = new OwnerFile(); 
-			ownerFile.setFileName(fileName);
-		
-			fileRepository.save(ownerFile);
-			 
-			
-			for(int i=0;i<workbook.getNumberOfSheets();i++) {
-				Sheet sheet = workbook.getSheetAt(i);//첫번째 시트 읽기
-				List<TempTableData> temptableDataList = new ArrayList<>();//리스트에 하나의 테이블의 데이터 다 저장
-				TableDoc newTableDoc  = new TableDoc();
-				newTableDoc.setFinalData(false);
-				for (Row row : sheet) {
-					 
-		            if (row.getRowNum() == 0) { 
-		                newTableDoc.setTableTitle(row.getCell(0).getStringCellValue());
-		                newTableDoc.setFileInfo(ownerFile);
-		                docRepository.save(newTableDoc);
-		                continue;
-		            	  // 첫 번째 행은 헤더이므로 건너뜁니다.
-		            }
-		            if (newTableDoc == null) {
-		                throw new IllegalStateException("Header row must be processed before data rows.");
-		            }
-		            
-		            Row firstnamerow = sheet.getRow(1);
-		            if (row.getRowNum() == 1) {
-		            	continue;
-		            }
-		            	
-		            
-		            for (Cell cell : row) {
-			            TempTableData temptableData = new TempTableData();
-			            
-			            temptableData.setColumnNumber(cell.getColumnIndex());
-			            temptableData.setRowNumber(row.getRowNum());//열 설정
-			            temptableData.setColumnName(firstnamerow.getCell(cell.getColumnIndex()).getStringCellValue());//열 이름
-			            temptableData.setContents(cell.getStringCellValue());//내용
-			            temptableData.setTableInfo(newTableDoc);//테이블 설정
-			          
-			            
-			            temptableDataList.add(temptableData);//한 셀을 저장
-		            }
-		        }
-				 tempdataRepository.saveAll(temptableDataList);
-			   
-			}
-		}
-		
-		
-	}
-	
-	
  
 ///delete
-	public void deleteFile(long id) {//원하는 파일을 삭제하는 코드
-		fileRepository.deleteById(id);
-		
-	}
 	
 
 	public void deleteTable(long tableid) {
@@ -208,11 +148,6 @@ public class ExcelService {
 	
 
 ///read//수정할것 없이 두 케이스에 대해 모두 작동
-	public List<OwnerFile> findAllFile() {/////////////////////////////////////전체 파일 보여주는 코드
-		 
-		return fileRepository.findAll();
-	}
-
 
 	public List<TableDoc> findTableById(long id) {//해당 파일의 모든 테이블 보여주기
 		return docRepository.findByFileInfoId(id);
@@ -263,12 +198,6 @@ public class ExcelService {
 		
 	}
 	
-	public void updateFileName(long fileid, String contents) {
-		OwnerFile file = fileRepository.findById(fileid).get();
-		file.setFileName(contents);
-		fileRepository.save(file);
-		
-	}
 
 	public void updateTableName(long tableid, String contents) {//테이블 이름 수정하기
 		Optional<TableDoc> temp = docRepository.findById(tableid);
