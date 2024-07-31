@@ -1,4 +1,4 @@
-package blueprint_table_ocr.webserver.azure.controller;
+package blueprint_table_ocr.webserver.azure.Dto;
 
 import jakarta.validation.constraints.NotBlank;
 

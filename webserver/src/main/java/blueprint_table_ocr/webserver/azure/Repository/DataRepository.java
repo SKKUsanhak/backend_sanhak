@@ -16,4 +16,4 @@ public interface DataRepository extends JpaRepository<TableData,Long>, CommonDat
 	
 	Optional<List<TableData>> findByTableInfoId(long tableId);
 
-}
+}  

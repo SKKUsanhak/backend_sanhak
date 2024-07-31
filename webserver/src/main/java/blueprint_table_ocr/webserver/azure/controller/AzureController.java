@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import blueprint_table_ocr.webserver.azure.Dto.NameDto;
 import blueprint_table_ocr.webserver.azure.service.AzureService;
 import blueprint_table_ocr.webserver.azure.service.ExcelService;
 import blueprint_table_ocr.webserver.datapart.Data;
@@ -59,9 +60,9 @@ public class AzureController {
 	   
 	 
 	   @PostMapping("/files")
-	   public String saveExcelDatabase(@RequestPart("file") MultipartFile file, @RequestPart("fileInformation") @Valid FileInformationDto fileInformation) {
+	   public String saveExcelDatabase(@RequestPart("file") MultipartFile file, @RequestParam String fileName) {
 	       try {
-	           excelService.saveTempDb(file, fileInformation);
+	           excelService.saveTempDb(file, fileName);
 	           return "File uploaded and data saved to database successfully.";
 	       } catch (Exception e) {
 	           e.printStackTrace();
@@ -92,19 +93,19 @@ public class AzureController {
 	   
 	   
 	   //read
-		@GetMapping("/files")//파일 리스트 보여주기 *GET/ {{baseUrl}}/files
+		@GetMapping("buildings/{buildingId}/files")//파일 리스트 보여주기 *GET/ {{baseUrl}}/files
 		public List<OwnerFile> listAllfiles() {
 			List<OwnerFile> filelists = excelService.findAllFile();
 			return filelists;
 		}
 		
-	   @GetMapping("/files/{fileId}/tables")//해당 아이디를 가진 파일의 테이블 리스트 보여주기 *GET/ {{baseUrl}}/files/:fileId/tables
+	   @GetMapping("buildings/{buildingId}/files/{fileId}/tables")//해당 아이디를 가진 파일의 테이블 리스트 보여주기 *GET/ {{baseUrl}}/files/:fileId/tables
 		public List<TableDoc> listAlltables(@PathVariable long fileId) {
 			List<TableDoc> tablelists = excelService.findTableById(fileId);
 			return tablelists;
 	   }
 	   
-	   @GetMapping("/files/{fileId}/tables/{tableId}/datas")//해당 아이디를 가진 테이블의데이터  보여주기  *GET/ {{baseUrl}}/files/:fileId/tables/:tableId/datas
+	   @GetMapping("buildings/{buildingId}/files/{fileId}/tables/{tableId}/datas")//해당 아이디를 가진 테이블의데이터  보여주기  *GET/ {{baseUrl}}/files/:fileId/tables/:tableId/datas
 		public List<? extends Data> showtables(@PathVariable long fileId,@PathVariable long tableId) {
 		   	if(excelService.isFinalTable(tableId)==true) {
 		   		List<? extends Data> datalists = excelService.findDataById(tableId);

@@ -1,4 +1,4 @@
-package blueprint_table_ocr.webserver.datapart;
+package blueprint_table_ocr.webserver.security;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

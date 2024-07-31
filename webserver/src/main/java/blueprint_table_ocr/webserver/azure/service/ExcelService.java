@@ -20,7 +20,6 @@ import blueprint_table_ocr.webserver.azure.Repository.DataRepository;
 import blueprint_table_ocr.webserver.azure.Repository.DocRepository;
 import blueprint_table_ocr.webserver.azure.Repository.FileRepository;
 import blueprint_table_ocr.webserver.azure.Repository.TempDataRepository;
-import blueprint_table_ocr.webserver.azure.controller.FileInformationDto;
 import blueprint_table_ocr.webserver.datapart.Data;
 import blueprint_table_ocr.webserver.datapart.OwnerFile;
 import blueprint_table_ocr.webserver.datapart.TableData;
@@ -47,13 +46,11 @@ public class ExcelService {
 	
 	
 //////////////////////데이터베이스에 삽입하는 코드 for임시데이터
-	public void saveTempDb(MultipartFile file, FileInformationDto fileInformation)  throws IOException{
+	public void saveTempDb(MultipartFile file, String fileName) throws IOException{
 		try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
 			OwnerFile ownerFile = new OwnerFile(); 
-			ownerFile.setFileName(fileInformation.getFileName());
-			ownerFile.setAddress(fileInformation.getAddress());
-			ownerFile.setBuildingName(fileInformation.getBuildingName());
-			ownerFile.setNote(fileInformation.getNote());
+			ownerFile.setFileName(fileName);
+		
 			fileRepository.save(ownerFile);
 			 
 			

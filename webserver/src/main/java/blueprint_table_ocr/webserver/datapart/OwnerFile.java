@@ -31,14 +31,15 @@ public class OwnerFile {
 	private LocalDateTime createTime;
 	private LocalDateTime updateTime;
 	
-	private String address;
-	private String buildingName;
-	private String note;
+	@ManyToOne
+	@JsonBackReference//순환 참조 방지
+	private Building buildingInfo;
 	
+	/*
 	@ManyToOne
 	@JsonBackReference//순환 참조 방지
 	private UserData userInfo;
-	
+	*/
 	@PrePersist
 	protected void onCreate() {
 		this.setCreateTime(LocalDateTime.now());
@@ -85,36 +86,5 @@ public class OwnerFile {
 		this.updateTime = updateTime;
 	}
 
-	public UserData getUserInfo() {
-		return userInfo;
-	}
-
-	public void setUserInfo(UserData userInfo) {
-		this.userInfo = userInfo;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getBuildingName() {
-		return buildingName;
-	}
-
-	public void setBuildingName(String buildingName) {
-		this.buildingName = buildingName;
-	}
-
-	public String getNote() {
-		return note;
-	}
-
-	public void setNote(String note) {
-		this.note = note;
-	}
 
 }

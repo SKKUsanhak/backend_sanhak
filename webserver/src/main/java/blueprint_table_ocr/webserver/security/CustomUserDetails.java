@@ -7,8 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import blueprint_table_ocr.webserver.datapart.UserData;
-
 public class CustomUserDetails implements UserDetails {
 	private final UserData user;
     public CustomUserDetails(UserData user) {

@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import blueprint_table_ocr.webserver.azure.Repository.UserRepository;
-import blueprint_table_ocr.webserver.datapart.UserData;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService{

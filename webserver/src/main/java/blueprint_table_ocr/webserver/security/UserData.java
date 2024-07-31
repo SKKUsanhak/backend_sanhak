@@ -1,4 +1,4 @@
-package blueprint_table_ocr.webserver.datapart;
+package blueprint_table_ocr.webserver.security;
 
 import java.util.List;
 
@@ -28,11 +28,11 @@ public class UserData {
 
     @Column(unique = true)
     private String email;
-
+/*
     @OneToMany(mappedBy =  "userInfo")
     @JsonIgnore
     @JsonManagedReference
-    private List<OwnerFile> filelists;
+    private List<OwnerFile> filelists;*/
     
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -74,13 +74,6 @@ public class UserData {
 		this.email = email;
 	}
 
-	public List<OwnerFile> getFilelists() {
-		return filelists;
-	}
-
-	public void setFilelists(List<OwnerFile> filelists) {
-		this.filelists = filelists;
-	}
 
 	public Role getRole() {
 		return role;
