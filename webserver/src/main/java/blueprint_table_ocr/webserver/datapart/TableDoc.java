@@ -36,7 +36,6 @@ public class TableDoc {
 	@JsonBackReference//순환 참조 방지
 	private OwnerFile fileInfo;
 
-	private boolean finalData;
 	
 
 	public Long getId() {
@@ -61,14 +60,6 @@ public class TableDoc {
 
 	public void setFileInfo(OwnerFile fileInfo) {
 		this.fileInfo = fileInfo;
-	}
-
-	public boolean isFinalData() {
-		return finalData;
-	}
-
-	public void setFinalData(boolean finalData) {
-		this.finalData = finalData;
 	}
 
 

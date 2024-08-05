@@ -56,14 +56,20 @@ public class FileService {
 				Sheet sheet = workbook.getSheetAt(i);//첫번째 시트 읽기
 				List<TempTableData> temptableDataList = new ArrayList<>();//리스트에 하나의 테이블의 데이터 다 저장
 				TableDoc newTableDoc  = new TableDoc();
-				newTableDoc.setFinalData(false);
-			 
+				DataVersionControl version = new DataVersionControl();
 				for (Row row : sheet) {
 					 
 		            if (row.getRowNum() == 0) { 
 		                newTableDoc.setTableTitle(row.getCell(0).getStringCellValue());
 		                newTableDoc.setFileInfo(ownerFile);
 		                docRepository.save(newTableDoc);//테이블 저장
+		                
+		                
+		                 
+						version.setNote("first version");
+						version.setTableInfo(newTableDoc);
+						version.setVersion("v0.0.1");
+						dvcRepository.save(version);//초기 버전 저장
 		                continue;
 		            	  // 첫 번째 행은 헤더이므로 건너뜁니다.
 		            }
@@ -85,17 +91,14 @@ public class FileService {
 			            temptableData.setColumnName(firstnamerow.getCell(cell.getColumnIndex()).getStringCellValue());//열 이름
 			            temptableData.setContents(cell.getStringCellValue());//내용
 			            temptableData.setTableInfo(newTableDoc);//테이블 설정
+			            temptableData.setVersionInfo(version);
 			          
 			            
 			            temptableDataList.add(temptableData);//한 셀을 저장
 		            }
 		        }
 				
-				DataVersionControl version = new DataVersionControl();
-				version.setNote("first version");
-				version.setTableInfo(newTableDoc);
-				version.setVersion("v0.0.1");
-				dvcRepository.save(version);//초기 버전 저장
+				 
 				tempdataRepository.saveAll(temptableDataList);//데이터 저장
 			   
 			}

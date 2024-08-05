@@ -53,6 +53,6 @@ public class BuildingController {
 	   @DeleteMapping("/buildings/{buildingId}")
 	   public ResponseEntity<Void> deleteBuilding(@PathVariable Long buildingId) {
 	        buildingService.deleteBuilding(buildingId);
-	        return ResponseEntity.noContent().build();
+	        return ResponseEntity.ok().build();
 	    }
 }

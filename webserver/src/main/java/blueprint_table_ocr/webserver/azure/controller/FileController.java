@@ -61,7 +61,7 @@ public class FileController {
 		@DeleteMapping("buildings/{buildingId}/files/{fileId}")//파일 삭제하기 *DELETE/ {{baseUrl}}/files/:fileId
 		public ResponseEntity<Void> DeleteFromDatabase (@PathVariable long buildingId,@PathVariable long fileId) {
 			fileService.deleteFile(fileId);
-			return ResponseEntity.noContent().build();
+			return ResponseEntity.ok().build();
 		}
 
 }

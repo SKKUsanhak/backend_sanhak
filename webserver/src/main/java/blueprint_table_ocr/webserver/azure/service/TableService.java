@@ -35,8 +35,13 @@ public class TableService {
 		TableDoc newTable = new TableDoc();
 		newTable.setFileInfo(fileinfo);
 		newTable.setTableTitle(tablename);
-		newTable.setFinalData(false);
 		docRepository.save(newTable);
+		//초기 버전 만들기
+		DataVersionControl version = new DataVersionControl();
+		version.setNote("first version");
+		version.setTableInfo(newTable);
+		version.setVersion("v0.0.1");
+		dvcRepository.save(version);
 		//기본 셀 만들기
 		TempTableData basicCell = new TempTableData(); 
 		basicCell.setColumnName("");
@@ -44,13 +49,9 @@ public class TableService {
 		basicCell.setContents("");
 		basicCell.setRowNumber(2);
 		basicCell.setTableInfo(newTable);
+		basicCell.setVersionInfo(version);
 		tempdataRepository.save(basicCell);
-		//초기 버전 만들기
-		DataVersionControl version = new DataVersionControl();
-		version.setNote("first version");
-		version.setTableInfo(newTable);
-		version.setVersion("v0.0.1");
-		dvcRepository.save(version);
+		 
 	}
 	
 	//read

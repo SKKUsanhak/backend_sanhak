@@ -51,7 +51,7 @@ public class TableController {
 	@DeleteMapping("buildings/{buildingId}/files/{fileId}/tables/{tableId}") 
 	public ResponseEntity<Void> DeletetableFromDatabase (@PathVariable long buildingId, @PathVariable long fileId, @PathVariable long tableId) {
 		tableService.deleteTable(tableId);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok().build();
 	}
 	   
 	
