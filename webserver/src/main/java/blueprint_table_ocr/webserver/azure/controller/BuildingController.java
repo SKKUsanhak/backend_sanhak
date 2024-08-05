@@ -53,6 +53,6 @@ public class BuildingController {
 	   @DeleteMapping("/buildings/{buildingId}")
 	   public ResponseEntity<Void> deleteBuilding(@PathVariable Long buildingId) {
 	        buildingService.deleteBuilding(buildingId);
-	        return ResponseEntity.ok().build();
+	        return ResponseEntity.ok().build();//ResponseEntity.noContent().build();원래 이게 맞는데 ㅜㅜ
 	    }
 }

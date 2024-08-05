@@ -83,14 +83,14 @@ public class DataController {
 	@DeleteMapping("buildings/{buildingId}/files/{fileId}/tables/{tableId}/columns") 
 	public ResponseEntity<String> DeleteColumn(@PathVariable long buildingId,@PathVariable long fileId,@PathVariable long tableId,@RequestParam int columnIndex) {
 		dataService.deleteColumn(tableId,columnIndex);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok().build(); 
 	}
 	
 	//행 삭제하고 아래있는거 땡기기 
 	@DeleteMapping("buildings/{buildingId}/files/{fileId}/tables/{tableId}/rows") 
 	public ResponseEntity<String> DeleteRow(@PathVariable long buildingId, @PathVariable long fileId,@PathVariable long tableId,@RequestParam int rowIndex) {
 		dataService.deleteRow(tableId,rowIndex);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok().build();
 	}
 	 
 	
