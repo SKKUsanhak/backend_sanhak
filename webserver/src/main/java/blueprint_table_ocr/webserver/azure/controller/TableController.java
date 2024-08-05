@@ -32,7 +32,7 @@ public class TableController {
 	 
 	//read	
 	@GetMapping("buildings/{buildingId}/files/{fileId}/tables")//해당 아이디를 가진 파일의 테이블 리스트 보여주기 
-	public ResponseEntity<List<TableDoc>> listAlltables(@PathVariable long fileId) {	
+	public ResponseEntity<List<TableDoc>> listAlltables(@PathVariable long buildingId, @PathVariable long fileId) {	
 		List<TableDoc> tableLists = tableService.findTableById(fileId);	
 		 if (tableLists.isEmpty()) {
 		        return ResponseEntity.noContent().build(); // 테이블이 없을 경우 HTTP 204 No Content 반환
@@ -40,9 +40,17 @@ public class TableController {
 		 return ResponseEntity.ok(tableLists);	   
 	}
 	
+	//해당 아이디를 가진 테이블 제목 보여주기
+	@GetMapping("buildings/{buildingId}/files/{fileId}/tables/{tableId}/name") 
+	public ResponseEntity<String> getTableName(@PathVariable long buildingId,@PathVariable long fileId,@PathVariable long tableId) {	  
+		String tableName = tableService.findTableName(tableId);	
+		 
+		 return ResponseEntity.ok(tableName);	   
+	}
+	
 	//update
 	@PatchMapping("buildings/{buildingId}/files/{fileId}/tables/{tableId}")//원하는 테이블 이름 업데이트 *버전 안남기기
-	public ResponseEntity<TableDoc> updateTableName (@PathVariable long fileId,@PathVariable long tableId ,@RequestBody @Valid NameDto nameDto) { 
+	public ResponseEntity<TableDoc> updateTableName (@PathVariable long buildingId,@PathVariable long fileId,@PathVariable long tableId ,@RequestBody @Valid NameDto nameDto) { 
 		TableDoc updatedTable = tableService.updateTableName(tableId, nameDto.getName());
 		return ResponseEntity.ok(updatedTable);
 	}

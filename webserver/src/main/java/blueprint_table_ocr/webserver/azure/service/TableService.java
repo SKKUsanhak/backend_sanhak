@@ -58,6 +58,11 @@ public class TableService {
 	public List<TableDoc> findTableById(long id) {//해당 파일의 모든 테이블 보여주기
 		return docRepository.findByFileInfoId(id);
 	}
+	public String findTableName(long tableId) {
+		TableDoc existingTable = docRepository.findById(tableId).get();
+		String name = existingTable.getTableTitle();
+		return name;
+	}
 	
 	//update
 	public TableDoc updateTableName(long tableid, String contents) {//테이블 이름 수정하기
@@ -80,5 +85,6 @@ public class TableService {
 		docRepository.deleteById(tableid);	
 		
 	}
+
 
 }
