@@ -14,10 +14,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import blueprint_table_ocr.webserver.azure.Dto.FileInfoDto;
 import blueprint_table_ocr.webserver.azure.Repository.BuildingRepository;
-import blueprint_table_ocr.webserver.azure.Repository.DataRepository;
+import blueprint_table_ocr.webserver.azure.Repository.DataVersionControlRepository;
 import blueprint_table_ocr.webserver.azure.Repository.DocRepository;
 import blueprint_table_ocr.webserver.azure.Repository.FileRepository;
 import blueprint_table_ocr.webserver.azure.Repository.TempDataRepository;
+import blueprint_table_ocr.webserver.datapart.DataVersionControl;
 import blueprint_table_ocr.webserver.datapart.OwnerFile;
 import blueprint_table_ocr.webserver.datapart.TableDoc;
 import blueprint_table_ocr.webserver.datapart.TempTableData;
@@ -29,12 +30,15 @@ public class FileService {
 	private DocRepository docRepository;	
 	private FileRepository fileRepository;
 	private BuildingRepository buildingRepository;
+	private DataVersionControlRepository dvcRepository;
 	
-	public FileService( DocRepository docRepository,FileRepository fileRepository, TempDataRepository tempdataRepository,BuildingRepository buildingRepository) {
+	public FileService( DocRepository docRepository,FileRepository fileRepository, TempDataRepository tempdataRepository,BuildingRepository buildingRepository,DataVersionControlRepository dvcRepository) {
+		
 		this.docRepository = docRepository;
 		this.fileRepository = fileRepository; 
 		this.tempdataRepository = tempdataRepository;
 		this.buildingRepository = buildingRepository;
+		this.dvcRepository = dvcRepository;
 	}
 	
 	//create file
@@ -45,7 +49,7 @@ public class FileService {
 			ownerFile.setFileName(fileInfo.getFileName());
 			ownerFile.setNote(fileInfo.getNote());
 		
-			fileRepository.save(ownerFile);
+			fileRepository.save(ownerFile);//파일 저장
 			 
 			
 			for(int i=0;i<workbook.getNumberOfSheets();i++) {
@@ -53,12 +57,13 @@ public class FileService {
 				List<TempTableData> temptableDataList = new ArrayList<>();//리스트에 하나의 테이블의 데이터 다 저장
 				TableDoc newTableDoc  = new TableDoc();
 				newTableDoc.setFinalData(false);
+			 
 				for (Row row : sheet) {
 					 
 		            if (row.getRowNum() == 0) { 
 		                newTableDoc.setTableTitle(row.getCell(0).getStringCellValue());
 		                newTableDoc.setFileInfo(ownerFile);
-		                docRepository.save(newTableDoc);
+		                docRepository.save(newTableDoc);//테이블 저장
 		                continue;
 		            	  // 첫 번째 행은 헤더이므로 건너뜁니다.
 		            }
@@ -85,7 +90,13 @@ public class FileService {
 			            temptableDataList.add(temptableData);//한 셀을 저장
 		            }
 		        }
-				 tempdataRepository.saveAll(temptableDataList);
+				
+				DataVersionControl version = new DataVersionControl();
+				version.setNote("first version");
+				version.setTableInfo(newTableDoc);
+				version.setVersion("v0.0.1");
+				dvcRepository.save(version);//초기 버전 저장
+				tempdataRepository.saveAll(temptableDataList);//데이터 저장
 			   
 			}
 		}

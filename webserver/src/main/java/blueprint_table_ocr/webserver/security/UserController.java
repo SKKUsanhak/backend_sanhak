@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import blueprint_table_ocr.webserver.azure.service.UserService;
 import jakarta.validation.Valid;
 
 @RestController

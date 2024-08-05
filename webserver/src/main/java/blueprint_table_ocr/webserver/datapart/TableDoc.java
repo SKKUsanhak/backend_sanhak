@@ -21,16 +21,16 @@ public class TableDoc {
 	private Long id;
 	
 	private String tableTitle;
-	
-	@OneToMany(mappedBy="tableInfo")
-	@JsonManagedReference//순환 참조 방지
-	@JsonIgnore
-	private List<TableData> tableDatas;
+
 	
 	@OneToMany(mappedBy="tableInfo",cascade = CascadeType.REMOVE)
 	@JsonManagedReference
 	@JsonIgnore
 	private List<TempTableData> temptableDatas;
+	
+	@OneToMany(mappedBy="tableInfo",cascade = CascadeType.REMOVE)
+	@JsonManagedReference
+	private List<DataVersionControl> dataVersionList;
 	
 	@ManyToOne
 	@JsonBackReference//순환 참조 방지
@@ -53,14 +53,6 @@ public class TableDoc {
 
 	public void setTableTitle(String tableTitle) {
 		this.tableTitle = tableTitle;
-	}
-
-	public List<TableData> getTableDatas() {
-		return tableDatas;
-	}
-
-	public void setTableDatas(List<TableData> tableDatas) {
-		this.tableDatas = tableDatas;
 	}
 
 	public OwnerFile getFileInfo() {

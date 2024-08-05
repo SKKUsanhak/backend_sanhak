@@ -36,6 +36,9 @@ public class BuildingController {
 	   @GetMapping("/buildings")
 	    public ResponseEntity<List<Building>> getAllBuildings() {
 	        List<Building> buildings = buildingService.getBuildings();
+	        if (buildings.isEmpty()) {
+		        return ResponseEntity.noContent().build(); // 테이블이 없을 경우 HTTP 204 No Content 반환
+	        }
 	        return ResponseEntity.ok(buildings);
 	   }
 	   

@@ -1,11 +1,9 @@
-package blueprint_table_ocr.webserver.azure.service;
+package blueprint_table_ocr.webserver.security;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import blueprint_table_ocr.webserver.azure.Repository.UserRepository;
-import blueprint_table_ocr.webserver.security.UserData;
-import blueprint_table_ocr.webserver.security.UserRegistrationDto;
 import blueprint_table_ocr.webserver.security.UserData.Role;
 
 @Service

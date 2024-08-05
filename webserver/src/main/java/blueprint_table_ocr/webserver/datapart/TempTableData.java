@@ -2,14 +2,13 @@ package blueprint_table_ocr.webserver.datapart;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class TempTableData implements Data {
+public class TempTableData{
 	@Id
 	@GeneratedValue
 	private Long id;
@@ -22,6 +21,10 @@ public class TempTableData implements Data {
 	@ManyToOne
 	@JsonBackReference
 	private TableDoc tableInfo;
+	
+	@ManyToOne
+	@JsonBackReference
+	private DataVersionControl versionInfo;
 	
 
 	
@@ -74,6 +77,14 @@ public class TempTableData implements Data {
 
 	public void setColumnNumber(Integer columnNumber) {
 		this.columnNumber = columnNumber;
+	}
+
+	public DataVersionControl getVersionInfo() {
+		return versionInfo;
+	}
+
+	public void setVersionInfo(DataVersionControl versionInfo) {
+		this.versionInfo = versionInfo;
 	}
 
 

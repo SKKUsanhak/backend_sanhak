@@ -42,8 +42,12 @@ public class FileController {
 	   //read files of specific building
 		@GetMapping("buildings/{buildingId}/files")
 		public ResponseEntity<List<OwnerFile>> listfiles(@PathVariable Long buildingId) {
-			List<OwnerFile> filelist = fileService.getFileofBuilding(buildingId);
-			return ResponseEntity.ok(filelist);
+			List<OwnerFile> fileList = fileService.getFileofBuilding(buildingId);
+			 if (fileList.isEmpty()) {
+			        return ResponseEntity.noContent().build(); // 테이블이 없을 경우 HTTP 204 No Content 반환
+			 }
+		
+			return ResponseEntity.ok(fileList);
 		}
 		
 		//update file info

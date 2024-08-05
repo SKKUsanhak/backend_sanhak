@@ -1,6 +1,5 @@
 package blueprint_table_ocr.webserver.datapart;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -13,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
 
 @Entity
 public class OwnerFile {
@@ -23,8 +21,6 @@ public class OwnerFile {
 	
 	private String fileName;
 	private String Note;
-	private LocalDateTime createTime;
-	private LocalDateTime updateTime;
 	
 	@OneToMany(mappedBy =  "fileInfo",cascade = CascadeType.REMOVE)
 	@JsonManagedReference
@@ -40,11 +36,7 @@ public class OwnerFile {
 	@JsonBackReference//순환 참조 방지
 	private UserData userInfo;
 	*/
-	@PrePersist
-	protected void onCreate() {
-		this.setCreateTime(LocalDateTime.now());
-		this.setUpdateTime(LocalDateTime.now());
-	}
+	
 
 	public Long getId() {
 		return Id;
@@ -70,21 +62,6 @@ public class OwnerFile {
 		this.tableDoc = tableDoc;
 	}
 
-	public LocalDateTime getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(LocalDateTime createTime) {
-		this.createTime = createTime;
-	}
-
-	public LocalDateTime getUpdateTime() {
-		return updateTime;
-	}
-
-	public void setUpdateTime(LocalDateTime updateTime) {
-		this.updateTime = updateTime;
-	}
 
 	public Building getBuildingInfo() {
 		return buildingInfo;
