@@ -28,6 +28,9 @@ public class DataVersionService {
 	}
 
 	public DataVersionControl createNewVersion(long tableId, @Valid VersioningDto versioningDto) {//최종적으로는 생성된 현재의 버전 리턴?
+		//최신 버전의 데이터 가져오기
+		DataVersionControl latestVersion = findLatestVersion(tableId);
+		List<TempTableData> latestDataList = tempdataRepository.findByVersionInfoId(latestVersion.getId()).get();
 		// TODO 1.새로운 버전 객체 만들기
 		DataVersionControl newVersion = new DataVersionControl();
 		newVersion.setVersion(versioningDto.getVersion());
@@ -37,9 +40,9 @@ public class DataVersionService {
 		newVersion.setUpdateTime(LocalDateTime.now());
 		dvcRepository.save(newVersion);
 		//2.그 객체를 참조하는 데이터들 그대로 만들기 
-		List<TempTableData> tempDataList = tempdataRepository.findByTableInfoId(tableId).get();
+		 
 		List<TempTableData> newDataList = new ArrayList<>();
-		for(TempTableData cell : tempDataList) {//final로 옮기기
+		for(TempTableData cell : latestDataList) {//final로 옮기기
 			TempTableData newData = new TempTableData();
 			newData.setColumnName(cell.getColumnName());
 			newData.setColumnNumber(cell.getColumnNumber());
