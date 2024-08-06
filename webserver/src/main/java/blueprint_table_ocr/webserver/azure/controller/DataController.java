@@ -62,6 +62,8 @@ public class DataController {
 		}
 		return ResponseEntity.ok(dataList);
 	}
+	
+	
 	   
 	//update   
 	@PatchMapping("buildings/{buildingId}/files/{fileId}/tables/{tableId}/datas")//원하는 셀 업데이트 

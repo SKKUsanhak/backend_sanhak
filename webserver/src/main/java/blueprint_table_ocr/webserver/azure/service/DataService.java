@@ -91,12 +91,27 @@ public class DataService {
 	}
 	//update
 	//셀 수정하기
+	/*
 	@Transactional
 	public TempTableData updateCell(long tableId,int columnIndex,int rowIndex,String contents) {
 		DataVersionControl latestVersion = dataVersionService.findLatestVersion(tableId);
 		TempTableData updatedCell = tempdataRepository.findByVersionInfoIdAndColumnNumberAndRowNumber(latestVersion.getId(),columnIndex,rowIndex).get();
 		updatedCell.setContents(contents);
 		return tempdataRepository.save(updatedCell);
+	}*/
+	
+	@Transactional
+	public TempTableData updateCell(long tableId,int columnIndex,int rowIndex,String contents) {
+		DataVersionControl latestVersion = dataVersionService.findLatestVersion(tableId);
+		List<TempTableData> latestDataList = tempdataRepository.findByVersionInfoId(latestVersion.getId()).get();
+		for(TempTableData cell:latestDataList) {
+			if(cell.getRowNumber() == rowIndex && cell.getColumnNumber() == columnIndex) {
+				cell.setContents(contents);
+				tempdataRepository.save(cell);
+				return cell;
+			}
+		}
+		return null;
 	}
 		
 	//열 이름 수정하기
