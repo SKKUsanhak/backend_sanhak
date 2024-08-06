@@ -109,7 +109,7 @@ public class FileService {
 	
 	//show file of specific building
 	public List<OwnerFile> getFileofBuilding(Long buildingId) {	 
-		return fileRepository.findByBuildingInfoId(buildingId);
+		return fileRepository.findByBuildingInfoId(buildingId).get();
 	}
 	
 	//update file info
@@ -122,10 +122,25 @@ public class FileService {
 	
 	//delete file
 	public void deleteFile(long fileId) {//원하는 파일을 삭제하는 코드
+		//Todo 1.파일과 연결되어있는 테이블 구하기
+		//2.각각의 테이블과 연결되어있는 참조 관계 끊기 
+		//3.파일 삭제
+		List<TableDoc> tableList = docRepository.findByFileInfoId(fileId).get();
+		for(TableDoc table: tableList) {
+			List<TempTableData> datalist = tempdataRepository.findByTableInfoId(table.getId()).get();
+			for(TempTableData cell: datalist) {//데이터와 참조관계 끊기
+				cell.setTableInfo(null);
+				tempdataRepository.save(cell);
+			}
+			List<DataVersionControl> versionlist = dvcRepository.findByTableInfoId(table.getId()).get();
+			for(DataVersionControl version: versionlist) {//버전과 참조관계 끊기
+			version.setTableInfo(null);
+			dvcRepository.save(version);
+			}
+		}
 		OwnerFile deletedFile = fileRepository.findById(fileId).get();
 		fileRepository.delete(deletedFile);
 		
 	}
-	
-
 }
+

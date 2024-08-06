@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,12 +22,12 @@ public class TableDoc {
 	private String tableTitle;
 
 	
-	@OneToMany(mappedBy="tableInfo",cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy="tableInfo")
 	@JsonManagedReference
 	@JsonIgnore
 	private List<TempTableData> temptableDatas;
 	
-	@OneToMany(mappedBy="tableInfo",cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy="tableInfo")
 	@JsonManagedReference
 	private List<DataVersionControl> dataVersionList;
 	

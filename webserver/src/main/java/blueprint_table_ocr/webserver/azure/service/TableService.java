@@ -56,7 +56,7 @@ public class TableService {
 	
 	//read
 	public List<TableDoc> findTableById(long id) {//해당 파일의 모든 테이블 보여주기
-		return docRepository.findByFileInfoId(id);
+		return docRepository.findByFileInfoId(id).get();
 	}
 	public String findTableName(long tableId) {
 		TableDoc existingTable = docRepository.findById(tableId).get();
@@ -65,8 +65,8 @@ public class TableService {
 	}
 	
 	//update
-	public TableDoc updateTableName(long tableid, String contents) {//테이블 이름 수정하기
-		Optional<TableDoc> temp = docRepository.findById(tableid);
+	public TableDoc updateTableName(long tableId, String contents) {//테이블 이름 수정하기
+		Optional<TableDoc> temp = docRepository.findById(tableId);
 		TableDoc tableDoc = temp.get();
 		tableDoc.setTableTitle(contents);
 		return docRepository.save(tableDoc);
@@ -74,15 +74,20 @@ public class TableService {
 	}
 	
 	//delete
-	public void deleteTable(long tableid) {
-		/*
-			List<TableData> datalist = dataRepository.findByTableInfoId(tableid).get();
-			for(TableData cell: datalist) {//참조관계 끊기
+	public void deleteTable(long tableId) {
+		List<TempTableData> datalist = tempdataRepository.findByTableInfoId(tableId).get();
+			for(TempTableData cell: datalist) {//데이터와 참조관계 끊기
 				cell.setTableInfo(null);
-				dataRepository.save(cell);
-			}*/
+				tempdataRepository.save(cell);
+			}
+		List<DataVersionControl> versionlist = dvcRepository.findByTableInfoId(tableId).get();
+			for(DataVersionControl version: versionlist) {//버전과 참조관계 끊기
+			version.setTableInfo(null);
+			dvcRepository.save(version);
+		}
+		//verison과 data는 연결되어있는 상태로 남음
 		
-		docRepository.deleteById(tableid);	
+		docRepository.deleteById(tableId);	
 		
 	}
 
