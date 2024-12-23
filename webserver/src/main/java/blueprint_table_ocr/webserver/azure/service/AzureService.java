@@ -36,7 +36,7 @@ public class AzureService {
     public AzureService() { // 시작 시 API 엔드포인트 / 키 고정
         super();
         this.documentAnalysisClient = new DocumentAnalysisClientBuilder()
-                .credential(new AzureKeyCredential("10bd385438f04d68a636119dec0e45a3"))
+                .credential(new AzureKeyCredential("없음,여기에 키 입력"))
                 .endpoint("https://maketest.cognitiveservices.azure.com/")
                 .buildClient();
     }
